@@ -9,13 +9,17 @@ acepack = importr("acepack")
 Hmisc = importr("Hmisc")
 energy = importr("energy")
 
-def ace(X,y,cats):
+def ace(X,y,cats,rtype):
     corr = []
+    if rtype=='Binary':
+        cols=[0,]
+    else:
+        cols=[]
     for i,col in enumerate(X.T):
         if i in cats:
-            rsq = acepack.ace(col, y, cat=IntVector([0, 1]))
+            rsq = acepack.ace(col, y, cat=IntVector(cols+[1,]))
         else:
-            rsq = acepack.ace(col, y, cat=IntVector([0,]))
+            rsq = acepack.ace(col, y, cat=IntVector(cols))
         corr.append(rsq.rx2('rsq')[0])
     return corr
 

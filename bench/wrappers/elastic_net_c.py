@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 sys.path.append('/home/glen/workspace')
 from ModelingMachine.engine.tasks.ElasticNet import ElasticNet
 
@@ -15,7 +16,8 @@ class ElasticNetC(object):
         return self.clf.predict(np.ascontiguousarray(X).astype(float))
 
     def predict_proba(self,X):
-        return self.clf.predict(np.ascontiguousarray(X).astype(float))
+        p = self.clf.predict(np.ascontiguousarray(X).astype(float))
+        return np.column_stack((1-p, p))
 
     def set_params(self,**args):
         self.args.update(args)

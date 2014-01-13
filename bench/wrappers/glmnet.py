@@ -1,6 +1,11 @@
 from sklearn.metrics import log_loss, mean_squared_error
-from rpy2.robjects.packages import importr
 import numpy as np
+import rpy2.robjects as robjects
+import rpy2.robjects.numpy2ri
+rpy2.robjects.numpy2ri.activate()
+from rpy2.robjects.numpy2ri import numpy2ri
+robjects.conversion.py2ri = numpy2ri
+from rpy2.robjects.packages import importr
 glmnet = importr("glmnet")
 
 
@@ -36,4 +41,5 @@ class GlmnetWrapper(object):
 
     def predict_proba(self, X):
         p = glmnet.predict_glmnet(self.model, X, self.args['lambda'])
-        return 1/(1+np.exp(-np.array(p)))
+        p = 1/(1+np.exp(-np.array(p)))
+        return np.column_stack((1-p, p))
