@@ -80,6 +80,34 @@ datasets = [
         'category': ['job', 'marital', 'education', 'default', 'housing', 'loan', 'contact', 'month', 'campaign', 'poutcome'],
 
     },
+    {
+        'name': 'bio_grid_small',
+        'file': '/home/glen/datasets/testdata/bio_grid_small.csv',
+        'target': 'Throughput',
+        'rtype': 'Binary',
+        'size': 'small',
+        'numeric': [],
+        'category': ['#BioGRID Interaction ID', 'Entrez Gene Interactor A', 'Entrez Gene Interactor B', 'BioGRID ID Interactor A', 'BioGRID ID Interactor B', 'Systematic Name Interactor A', 'Systematic Name Interactor B', 'Official Symbol Interactor A', 'Official Symbol Interactor B', 'Synonyms Interactor A', 'Synonyms Interactor B', 'Experimental System', 'Experimental System Type', 'Author', 'Pubmed ID', 'Organism Interactor A', 'Organism Interactor B', 'Score', 'Modification', 'Phenotypes', 'Qualifications', 'Tags', 'Source Database'],
+
+    },
+    {
+        'name': 'bio_response',
+        'file': '/home/glen/datasets/testdata/bio_response_combined.csv',
+        'target': 'Activity',
+        'rtype': 'Binary',
+        'size': 'small',
+        'numeric': ['D'+str(i+1) for i in range(1776)],
+        'category': [],
+    },
+#    {
+#        'name': 'census_1990_small',
+#        'file': '/home/glen/datasets/testdata/census_1990_small.csv',
+#        'target': 'iClass',
+#        'rtype': 'Regression',
+#        'size': 'small',
+#        'numeric': [],
+#        'category': [],
+#    },
 ]
 
 def na_median(X):

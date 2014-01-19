@@ -1,4 +1,5 @@
 import datasets
+import numpy as np
 from sklearn.cross_validation import cross_val_score, KFold
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from wrappers.correlation import ace
@@ -19,7 +20,21 @@ def run_rf(ds, drop=[]):
 
 for ds in datasets.get_datasets():
     Xc, yc = datasets.get_data(ds, convert='numbers', standardize=False)
-    cor = ace(Xc, yc, datasets.get_column_index(ds))
-    base = run_rf(ds)
+    #cor = ace(Xc, yc, datasets.get_column_index(ds),ds['rtype'])
+    cor = ace(Xc, yc, range(0,Xc.shape[1]),ds['rtype'])
+    ncor = ace(Xc, yc, [],ds['rtype'])
+    #print '==== '+ds['name']+' ===='
+    #print zip(datasets.get_columns(ds),cor)
     for i,c in enumerate(datasets.get_columns(ds)):
-        print '%-30s,%f,%f' % (c,base-run_rf(ds,[i]),cor[i])
+        acat = cor[i]-len(np.unique(Xc[:,i]))*1.0/Xc.shape[0]
+        if i in datasets.get_column_index(ds):
+            htype = 'CAT'
+            tcat = acat
+        else:
+            htype = 'NUM'
+            tcat = ncor[i]
+        print ds['name']+','+c+','+htype+','+str(ncor[i])+','+str(cor[i])+','+str(acat)+','+str(tcat)
+    #print ''
+    #base = run_rf(ds)
+    #for i,c in enumerate(datasets.get_columns(ds)):
+    #    print '%-30s,%f,%f' % (c,base-run_rf(ds,[i]),cor[i])
