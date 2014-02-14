@@ -28,6 +28,7 @@ datasets = [
         'file': '/home/glen/datasets/testdata/allstate-nonzero-small.csv',
         'target': 'Claim_Amount',
         'rtype': 'Regression',
+        'positive': True,
         'size': 'small',
         'numeric': ['Vehicle', 'Calendar_Year', 'Model_Year','Var1','Var2','Var3','Var4','Var5','Var6','Var7','Var8'],
         'category': ['Row_ID', 'Household_ID', 'OrdCat', 'Blind_Make','Blind_Model','Blind_Submodel','Cat1','Cat2','Cat3','Cat4','Cat5',
@@ -38,6 +39,7 @@ datasets = [
         'file': '/home/glen/datasets/testdata/fastiron-train-sample.csv',
         'target': 'SalePrice',
         'rtype': 'Regression',
+        'positive': True,
         'size': 'small',
         'numeric': ['YearMade', 'MachineHoursCurrentMeter'],
         'category': ['SalesID', 'MachineID', 'ModelID', 'datasource', 'auctioneerID', 'UsageBand', 'saledate', 'fiModelDesc',
@@ -130,11 +132,13 @@ def get_datasets(rtype='All', size='small', name=None):
     else:
         ds = []
         for i in datasets:
-            if rtype in (i['rtype'],'All') and size in (i['size'],'All'):
+            if rtype == 'Positive' and i.get('positive') and size in (i['size'],'All'):
+                ds.append(i)
+            elif rtype in (i['rtype'],'All') and size in (i['size'],'All'):
                 ds.append(i)
         return ds
 
-def get_data(ds, standardize=True, convert='one_hot', drop=[]):
+def get_data(ds, standardize=True, convert='one_hot', impute='median', drop=[]):
     if standardize and not convert:
         raise ValueError("option standardize requires convert 'one_hot' or 'numbers'")
     df = pandas.read_csv(ds['file'])
@@ -149,7 +153,10 @@ def get_data(ds, standardize=True, convert='one_hot', drop=[]):
     num = df[keep_num].astype(float)
     cat = df[keep_cat].astype(object)
     if ds['numeric']:
-        num2 = na_median(num.values)
+        if impute=='median':
+            num2 = na_median(num.values)
+        else:
+            num2 = na_median(num.values)
     else:
         num2 = np.array([])
     if ds['category']:

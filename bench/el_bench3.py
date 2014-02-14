@@ -14,8 +14,6 @@ for ds in datasets.get_datasets():
     for a in (0.1, 0.3, 0.6, 0.9):
         for lm in (1, 0.1, 0.01, 0.001):
             if ds['rtype'] == 'Binary':
-                continue
-            if ds['rtype'] == 'Binary':
                 clf1 = LogisticRegression()
                 clf2 = ElasticNetC(distribution='Bernoulli', lambda_=lm, alpha=a, tolerance=0.0001)
                 clf3 = SGDClassifier(alpha=lm, l1_ratio=a, loss='log', eta0=0.001, penalty='elasticnet')
