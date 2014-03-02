@@ -16,7 +16,7 @@ class TreeBoost(object):
         self.clf.fit(np.ascontiguousarray(X).astype(float),y.astype(float),**self.args)
 
     def predict(self,X):
-        return self.clf.predict(np.ascontiguousarray(X).astype(float))
+        return np.array(self.clf.predict(np.ascontiguousarray(X).astype(float)))
 
     def predict_proba(self,X):
         p = np.array(self.clf.predict(np.ascontiguousarray(X).astype(float)))
