@@ -10,41 +10,22 @@ from common.encoding import detect_encoding
 
 datasets = [
     {
-        'name': 'kickcars_small',
-        'file': '/home/glen/datasets/testdata/kickcars-training-sample.csv',
-        'target': 'IsBadBuy',
-        'rtype': 'Binary',
-        'size': 'small',
-        'numeric': ['VehYear', 'VehicleAge', 'VehOdo',
-                    'MMRAcquisitionAuctionAveragePrice', 'MMRAcquisitionAuctionCleanPrice',
-                    'MMRAcquisitionRetailAveragePrice', 'MMRAcquisitonRetailCleanPrice',
-                    'MMRCurrentAuctionAveragePrice', 'MMRCurrentAuctionCleanPrice',
-                    'MMRCurrentRetailAveragePrice',
-                    'MMRCurrentRetailCleanPrice', 'WarrantyCost'],
-        'category': ['RefId', 'PurchDate', 'Auction', 'Make', 'Model', 'Trim', 'SubModel', 'Color',
-                     'Transmission', 'WheelType', 'WheelTypeID', 'Nationality', 'Size', 'TopThreeAmericanName',
-                     'PRIMEUNIT', 'AUCGUART', 'BYRNO', 'VNZIP1', 'VNST', 'VehBCost', 'IsOnlineSale'],
-    },
-    {
-        'name': 'census_1990_small',
-        'file': '/home/glen/datasets/testdata/census_1990_small.csv',
-        'target': 'iClass',
+        'name': 'fastiron-train-30k',
+        'file': '/home/glen/datasets/testdata/fastiron-train-30k.csv',
+        'target': 'SalePrice',
         'rtype': 'Regression',
         'positive': True,
-        'size': 'small',
-        'numeric': ['caseid','dAge','dAncstry1','dAncstry2','iAvail','iCitizen','dDepart','iDisabl1','iDisabl2','iEnglish','iFeb55','iFertil','dHispanic','dHour89','dHours','iImmigr','dIncome1','dIncome2','dIncome3','dIncome4','dIncome5','dIncome6','dIncome7','dIncome8','dIndustry','iKorean','iLang1','iLooking','iMarital','iMay75880','iMeans','iMilitary','iMobility','iMobillim','dOccup','iOthrserv','iPerscare','dPOB','dPoverty','dPwgt1','iRagechld','dRearning','iRelat1','iRelat2','iRemplpar','iRiders','iRlabor','iRownchld','dRpincome','iRPOB','iRrelchld','iRspouse','iRvetserv','iSchool','iSept80','iSex','iSubfam1','iSubfam2','iTmpabsnt','dTravtime','iVietnam','dWeek89','iWork89','iWorklwk','iWWII','iYearsch','iYearwrk','dYrsserv'],
-        'category': [],
-    },
-    {
-        'name': 'allstate_nonzero_small',
-        'file': '/home/glen/datasets/testdata/allstate-nonzero-small.csv',
-        'target': 'Claim_Amount',
-        'rtype': 'Regression',
-        'positive': True,
-        'size': 'small',
-        'numeric': ['Vehicle', 'Calendar_Year', 'Model_Year','Var1','Var2','Var3','Var4','Var5','Var6','Var7','Var8'],
-        'category': ['Row_ID', 'Household_ID', 'OrdCat', 'Blind_Make','Blind_Model','Blind_Submodel','Cat1','Cat2','Cat3','Cat4','Cat5',
-                     'Cat6','Cat7','Cat8','Cat9','Cat10','Cat11','Cat12','NVCat','NVVar1','NVVar2','NVVar3','NVVar4'],
+        'size': 'large',
+        'numeric': ['YearMade', 'MachineHoursCurrentMeter'],
+        'category': ['SalesID', 'MachineID', 'ModelID', 'datasource', 'auctioneerID', 'UsageBand', 'saledate', 'fiModelDesc',
+                     'fiBaseModel', 'fiSecondaryDesc', 'fiModelSeries', 'fiModelDescriptor', 'ProductSize', 'fiProductClassDesc',
+                     'state', 'ProductGroup', 'ProductGroupDesc', 'Drive_System', 'Enclosure', 'Forks', 'Pad_Type', 'Ride_Control',
+                     'Stick', 'Transmission', 'Turbocharged', 'Blade_Extension', 'Blade_Width', 'Enclosure_Type',
+                     'Engine_Horsepower', 'Hydraulics', 'Pushblock', 'Ripper', 'Scarifier', 'Tip_Control', 'Tire_Size', 'Coupler',
+                     'Coupler_System', 'Grouser_Tracks', 'Hydraulics_Flow', 'Track_Type', 'Undercarriage_Pad_Width', 'Stick_Length',
+                     'Thumb', 'Pattern_Changer', 'Grouser_Type', 'Backhoe_Mounting', 'Blade_Type', 'Travel_Controls',
+                     'Differential_Type', 'Steering_Controls'],
+        'text': [],
     },
     {
         'name': 'fastiron_small',
@@ -62,6 +43,108 @@ datasets = [
                      'Coupler_System', 'Grouser_Tracks', 'Hydraulics_Flow', 'Track_Type', 'Undercarriage_Pad_Width', 'Stick_Length',
                      'Thumb', 'Pattern_Changer', 'Grouser_Type', 'Backhoe_Mounting', 'Blade_Type', 'Travel_Controls',
                      'Differential_Type', 'Steering_Controls'],
+        'text': [],
+    },
+    {
+        'name': 'kickcars_train_full',
+        'file': '/home/glen/datasets/testdata/kickcars_train_full.csv',
+        'target': 'IsBadBuy',
+        'rtype': 'Binary',
+        'size': 'large',
+        'numeric': ['VehYear', 'VehicleAge', 'VehOdo',
+                    'MMRAcquisitionAuctionAveragePrice', 'MMRAcquisitionAuctionCleanPrice',
+                    'MMRAcquisitionRetailAveragePrice', 'MMRAcquisitonRetailCleanPrice',
+                    'MMRCurrentAuctionAveragePrice', 'MMRCurrentAuctionCleanPrice',
+                    'MMRCurrentRetailAveragePrice', 'VehBCost',
+                    'MMRCurrentRetailCleanPrice', 'WarrantyCost'],
+        'category': ['RefId', 'PurchDate', 'Auction', 'Make', 'Model', 'Trim', 'SubModel', 'Color',
+                     'Transmission', 'WheelType', 'WheelTypeID', 'Nationality', 'Size', 'TopThreeAmericanName',
+                     'PRIMEUNIT', 'AUCGUART', 'BYRNO', 'VNZIP1', 'VNST', 'IsOnlineSale'],
+        'text': [],
+    },
+    {
+        'name': 'kickcars_small',
+        'file': '/home/glen/datasets/testdata/kickcars-training-sample.csv',
+        'target': 'IsBadBuy',
+        'rtype': 'Binary',
+        'size': 'small',
+        'numeric': ['VehYear', 'VehicleAge', 'VehOdo',
+                    'MMRAcquisitionAuctionAveragePrice', 'MMRAcquisitionAuctionCleanPrice',
+                    'MMRAcquisitionRetailAveragePrice', 'MMRAcquisitonRetailCleanPrice',
+                    'MMRCurrentAuctionAveragePrice', 'MMRCurrentAuctionCleanPrice',
+                    'MMRCurrentRetailAveragePrice', 'VehBCost',
+                    'MMRCurrentRetailCleanPrice', 'WarrantyCost'],
+        'category': ['RefId', 'PurchDate', 'Auction', 'Make', 'Model', 'Trim', 'SubModel', 'Color',
+                     'Transmission', 'WheelType', 'WheelTypeID', 'Nationality', 'Size', 'TopThreeAmericanName',
+                     'PRIMEUNIT', 'AUCGUART', 'BYRNO', 'VNZIP1', 'VNST', 'IsOnlineSale'],
+        'text': [],
+    },
+    {
+        'name': 'french_damage_cost',
+        'file': '/home/glen/datasets/testdata/French_DAMAGE_cost.csv',
+        'target': 'cout',
+        'rtype': 'Regression',
+        'size': 'large',
+        'numeric': ['nocontrat','exposition','puissance','agevehicule','ageconducteur','bonus','marque','densite','region'],
+        'category': ['zone','carburant'],
+        #'numeric': [],
+        #'category': ['zone','carburant','nocontrat','exposition','puissance','agevehicule','ageconducteur','bonus','marque','densite','region'],
+        'text': [],
+    },
+    {
+        'name': 'FrenchMotor1_cost_fixed',
+        'file': '/home/glen/datasets/testdata/FrenchMotor1_cost_fixed.csv',
+        'target': 'cout',
+        'rtype': 'Regression',
+        'size': 'large',
+        'numeric': ['numeropol','exposition','age','duree_permis','annee_vehicule'],
+        'category': ['debut_pol','fin_pol','freq_paiement','langue','type_prof','alimentation','type_territoire','utilisation','presence_alarme','marque_voiture','sexe'],
+        'text': [],
+    },
+    {
+        'name': 'FrenchMotor1_sev',
+        'file': '/home/glen/datasets/testdata/FrenchMotor1_sev.csv',
+        'target': 'coutsin',
+        'rtype': 'Regression',
+        'size': 'small',
+        'numeric': ['numeropol','exposition','age','duree_permis','age_vehicule','i'],
+        'category': ['debut_pol','fin_pol','freq_paiement','langue','type_prof','alimentation','type_territoire','utilisation','presence_alarme','marque_voiture','sexe'],
+        'text': [],
+    },
+    {
+        'name': 'census_1990_small',
+        'file': '/home/glen/datasets/testdata/census_1990_small.csv',
+        'target': 'iClass',
+        'rtype': 'Regression',
+        'positive': True,
+        'size': 'small',
+        'numeric': ['caseid','dAge','dAncstry1','dAncstry2','iAvail','iCitizen','dDepart','iDisabl1','iDisabl2','iEnglish','iFeb55','iFertil','dHispanic','dHour89','dHours','iImmigr','dIncome1','dIncome2','dIncome3','dIncome4','dIncome5','dIncome6','dIncome7','dIncome8','dIndustry','iKorean','iLang1','iLooking','iMarital','iMay75880','iMeans','iMilitary','iMobility','iMobillim','dOccup','iOthrserv','iPerscare','dPOB','dPoverty','dPwgt1','iRagechld','dRearning','iRelat1','iRelat2','iRemplpar','iRiders','iRlabor','iRownchld','dRpincome','iRPOB','iRrelchld','iRspouse','iRvetserv','iSchool','iSept80','iSex','iSubfam1','iSubfam2','iTmpabsnt','dTravtime','iVietnam','dWeek89','iWork89','iWorklwk','iWWII','iYearsch','iYearwrk','dYrsserv'],
+        'category': [],
+        'text': [],
+    },
+    {
+        'name': 'allstate_nonzero_small',
+        'file': '/home/glen/datasets/testdata/allstate-nonzero-small.csv',
+        'target': 'Claim_Amount',
+        'rtype': 'Regression',
+        'positive': True,
+        'size': 'small',
+        'numeric': ['Vehicle', 'Calendar_Year', 'Model_Year','Var1','Var2','Var3','Var4','Var5','Var6','Var7','Var8'],
+        'category': ['Row_ID', 'Household_ID', 'OrdCat', 'Blind_Make','Blind_Model','Blind_Submodel','Cat1','Cat2','Cat3','Cat4','Cat5',
+                     'Cat6','Cat7','Cat8','Cat9','Cat10','Cat11','Cat12','NVCat','NVVar1','NVVar2','NVVar3','NVVar4'],
+        'text': [],
+    },
+    {
+        'name': 'allstate_train_small',
+        'file': '/home/glen/datasets/testdata/allstate_train_small.csv',
+        'target': 'Claim_Amount',
+        'rtype': 'Regression',
+        'positive': True,
+        'size': 'medium',
+        'numeric': ['Vehicle', 'Calendar_Year', 'Model_Year','Var1','Var2','Var3','Var4','Var5','Var6','Var7','Var8'],
+        'category': ['Row_ID', 'Household_ID', 'OrdCat', 'Blind_Make','Blind_Model','Blind_Submodel','Cat1','Cat2','Cat3','Cat4','Cat5',
+                     'Cat6','Cat7','Cat8','Cat9','Cat10','Cat11','Cat12','NVCat','NVVar1','NVVar2','NVVar3','NVVar4'],
+        'text': [],
     },
     {
         'name': 'amazon_small_no-c',
@@ -72,6 +155,7 @@ datasets = [
         'numeric': [],
         'category': ['RESOURCE', 'MGR_ID', 'ROLE_ROLLUP_1', 'ROLE_ROLLUP_2', 'ROLE_DEPTNAME', 'ROLE_TITLE',
                      'ROLE_FAMILY_DESC', 'ROLE_FAMILY', 'ROLE_CODE' ],
+        'text': [],
     },
     {
         'name': 'credit_small',
@@ -83,6 +167,7 @@ datasets = [
                     'DebtRatio', 'MonthlyIncome', 'NumberOfOpenCreditLinesAndLoans', 'NumberOfTimes90DaysLate',
                     'NumberRealEstateLoansOrLines', 'NumberOfTime60-89DaysPastDueNotWorse', 'NumberOfDependents'],
         'category': [],
+        'text': [],
     },
     {
         'name': 'bank_marketing_small',
@@ -92,6 +177,7 @@ datasets = [
         'size': 'small',
         'numeric': ['age', 'balance', 'day', 'duration', 'pdays', 'previous'],
         'category': ['job', 'marital', 'education', 'default', 'housing', 'loan', 'contact', 'month', 'campaign', 'poutcome'],
+        'text': [],
 
     },
     {
@@ -102,6 +188,7 @@ datasets = [
         'size': 'small',
         'numeric': [],
         'category': ['#BioGRID Interaction ID', 'Entrez Gene Interactor A', 'Entrez Gene Interactor B', 'BioGRID ID Interactor A', 'BioGRID ID Interactor B', 'Systematic Name Interactor A', 'Systematic Name Interactor B', 'Official Symbol Interactor A', 'Official Symbol Interactor B', 'Synonyms Interactor A', 'Synonyms Interactor B', 'Experimental System', 'Experimental System Type', 'Author', 'Pubmed ID', 'Organism Interactor A', 'Organism Interactor B', 'Score', 'Modification', 'Phenotypes', 'Qualifications', 'Tags', 'Source Database'],
+        'text': [],
 
     },
     {
@@ -112,6 +199,7 @@ datasets = [
         'size': 'small',
         'numeric': ['D'+str(i+1) for i in range(1776)],
         'category': [],
+        'text': [],
     },
     {
         'name': 'amazon_de_reviews_small',
@@ -131,36 +219,6 @@ datasets = [
         'size': 'small',
         'numeric': ['1B_act','1B_adj','2b_act','2b_adj','3b_act','3b_adj','AVG_act','AVG_adj','AVG_adj_Z','Age','Age_Z','AvgFact','BBPA_act','BBPA_adj','BBPA_adj_Z','Draft Year','ERAFactor','HRPA_act','HRPA_adj','HRPA_adj_Z','Hrfactor','ISO_act','ISO_adj','ISO_adj_Z','KW_act','KW_adj','KW_adj_Z','Kfactor','OBP_act','OBP_adj','OBP_adj_Z','OPS_act','OPS_adj','PF','Pos_1B','Pos_2B','Pos_3B','Pos_C','Pos_CF','Pos_IF','Pos_LF','Pos_OF','Pos_RF','Pos_SS','Rfactor','SLG_act','SLG_adj','SLG_adj_Z','SOPA_act','SOPA_adj','SOPA_adj_Z','Sbfactor','SoS','TPA(ADJ)_act','TPA(ADJ)_adj','TPA_adj_Z','XBH/AB_act','XBH/AB_adj','XBH/AB_adj_Z','XBH_act','XBH_adj','ab_act','ab_adj','bb_act','bb_adj','h_act','h_adj','hr_act','hr_adj','so_act','so_adj','tb_act','tb_adj','JS','YR'],
         'category': ['PlayerID','School','dummy','Type'],
-        'text': []
-    },
-    {
-        'name': 'traind1s',
-        'file': '/home/glen/datasets/testdata/traind1s.dat',
-        'target': 'y',
-        'rtype': 'Binary',
-        'size': 'large',
-        'numeric': ['r','c','h','count','pct','h_fb','count_fb','pct_fb','r0c0','r0c1','r0c2','r0c3','r0c4','r0c5','r0c6','r1c0','r1c1','r1c2','r1c3','r1c4','r1c5','r1c6','r2c0','r2c1','r2c2','r2c3','r2c4','r2c5','r2c6','r3c0','r3c1','r3c2','r3c3','r3c4','r3c5','r3c6','r4c0','r4c1','r4c2','r4c3','r4c4','r4c5','r4c6','r5c0','r5c1','r5c2','r5c3','r5c4','r5c5','r5c6','r6c0','r6c1','r6c2','r6c3','r6c4','r6c5','r6c6'],
-        'category': [],
-        'text': []
-    },
-    {
-        'name': 'traind4s',
-        'file': '/home/glen/datasets/testdata/traind4s.dat',
-        'target': 'y',
-        'rtype': 'Binary',
-        'size': 'large',
-        'numeric': ['r','c','h','count','pct','h_fb','count_fb','pct_fb','r0c0','r0c1','r0c2','r0c3','r0c4','r0c5','r0c6','r1c0','r1c1','r1c2','r1c3','r1c4','r1c5','r1c6','r2c0','r2c1','r2c2','r2c3','r2c4','r2c5','r2c6','r3c0','r3c1','r3c2','r3c3','r3c4','r3c5','r3c6','r4c0','r4c1','r4c2','r4c3','r4c4','r4c5','r4c6','r5c0','r5c1','r5c2','r5c3','r5c4','r5c5','r5c6','r6c0','r6c1','r6c2','r6c3','r6c4','r6c5','r6c6'],
-        'category': [],
-        'text': []
-    },
-    {
-        'name': 'traind5s',
-        'file': '/home/glen/datasets/testdata/traind5s.dat',
-        'target': 'y',
-        'rtype': 'Binary',
-        'size': 'large',
-        'numeric': ['r','c','h','count','pct','h_fb','count_fb','pct_fb','r0c0','r0c1','r0c2','r0c3','r0c4','r0c5','r0c6','r1c0','r1c1','r1c2','r1c3','r1c4','r1c5','r1c6','r2c0','r2c1','r2c2','r2c3','r2c4','r2c5','r2c6','r3c0','r3c1','r3c2','r3c3','r3c4','r3c5','r3c6','r4c0','r4c1','r4c2','r4c3','r4c4','r4c5','r4c6','r5c0','r5c1','r5c2','r5c3','r5c4','r5c5','r5c6','r6c0','r6c1','r6c2','r6c3','r6c4','r6c5','r6c6'],
-        'category': [],
         'text': []
     },
     {
@@ -300,10 +358,13 @@ def get_data(ds, standardize=True, convert='one_hot', impute='median', drop=[]):
             if txt2.shape[0]:
                 X = np.column_stack((cat2,num2,txt2))
             else:
-                #X = np.column_stack((cat2.todense(),num2))
-                X = sp.sparse.hstack((cat2,sp.sparse.csc_matrix(num2+0.00001)),format='csc')
                 assert np.all(np.logical_not(np.isnan(num2)))
-                assert np.all(np.logical_not(np.isnan(cat2.todense())))
+                if convert == 'numbers':
+                    X = np.column_stack((cat2,num2))
+                    assert np.all(np.logical_not(np.isnan(cat2)))
+                else:
+                    X = sp.sparse.hstack((cat2,sp.sparse.csc_matrix(num2+0.00001)),format='csc')
+                    assert np.all(np.logical_not(np.isnan(cat2.todense())))
         else:
             if txt2.shape[0]:
                 X = sp.sparse.hstack([cat2,txt2])
@@ -330,5 +391,8 @@ def get_data(ds, standardize=True, convert='one_hot', impute='median', drop=[]):
 def get_column_index(ds):
     return range(0,len(ds['category']))
 
-def get_columns(ds):
-    return ds['category']+ds['numeric']
+def get_columns(ds, t=None):
+    if t:
+        return ds[t]
+    else:
+        return ds['category']+ds['numeric']+ds['text']
