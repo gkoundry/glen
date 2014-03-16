@@ -6,7 +6,7 @@ from sklearn.metrics import r2_score
 d = pandas.read_csv( '/home/glen/datasets/testdata/fastiron-train-30k.csv')
 
 #x=d['ModelID']
-x=d['MachineHoursCurrentMeter']
+x=d['fiModelDesc']
 y=d['SalePrice']
 
 for k in (0,): #,1,2,4,8,16,32,64,128):

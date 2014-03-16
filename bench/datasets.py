@@ -170,6 +170,18 @@ datasets = [
         'text': [],
     },
     {
+        'name': 'credit_large',
+        'file': '/home/glen/datasets/testdata/credit-train-full.csv',
+        'target': 'SeriousDlqin2yrs',
+        'rtype': 'Binary',
+        'size': 'large',
+        'numeric': ['RevolvingUtilizationOfUnsecuredLines', 'age', 'NumberOfTime30-59DaysPastDueNotWorse',
+                    'DebtRatio', 'MonthlyIncome', 'NumberOfOpenCreditLinesAndLoans', 'NumberOfTimes90DaysLate',
+                    'NumberRealEstateLoansOrLines', 'NumberOfTime60-89DaysPastDueNotWorse', 'NumberOfDependents'],
+        'category': [],
+        'text': [],
+    },
+    {
         'name': 'bank_marketing_small',
         'file': '/home/glen/datasets/testdata/bank_marketing_small.csv',
         'target': 'y',
@@ -363,7 +375,8 @@ def get_data(ds, standardize=True, convert='one_hot', impute='median', drop=[]):
                     X = np.column_stack((cat2,num2))
                     assert np.all(np.logical_not(np.isnan(cat2)))
                 else:
-                    X = sp.sparse.hstack((cat2,sp.sparse.csc_matrix(num2+0.00001)),format='csc')
+                    #X = sp.sparse.hstack((cat2,sp.sparse.csc_matrix(num2+0.00001)),format='csc')
+                    X = np.column_stack((cat2.todense(),num2))
                     assert np.all(np.logical_not(np.isnan(cat2.todense())))
         else:
             if txt2.shape[0]:
