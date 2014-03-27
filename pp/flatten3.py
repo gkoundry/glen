@@ -54,7 +54,7 @@ for l in f:
 
 for yl in ('A','B','C','D','E','F','G'):
     f = open ('train3'+yl+'.csv','w')
-    f.write('id,y,last,mf,quotes,mfc,mfp,lsc,lsp,mfage,lspr,mfpr,prrt')
+    f.write('id,y,last,mf,quotes,mfc,mfp,lsc,lsp,mfage,lsmfpr,prrt')
     #for yl2 in ('A','B','C','D','E','F','G'):
     #   for l in range(len(levels[yl2])):
     #       f.write(',%s_last_%d' % (yl2,l))
@@ -78,7 +78,7 @@ for yl in ('A','B','C','D','E','F','G'):
         if mf1==ls1 or ans not in (mf1,ls1):
             continue
         f.write(id+','+str(int((ls1==ans)))+','+ls1+','+mf1+','+str(quotes[id]))
-        f.write(',%d,%f,%d,%f,%d,%d,%d' % (count[id][yl+mf1],count[id][yl+mf1]*1.0/quotes[id],count[id][yl+ls1],count[id][yl+ls1]*1.0/quotes[id],mfage[id][yl],freq[ls1],freq[mf1]))
+        f.write(',%d,%f,%d,%f,%d,%f' % (count[id][yl+mf1],count[id][yl+mf1]*1.0/quotes[id],count[id][yl+ls1],count[id][yl+ls1]*1.0/quotes[id],mfage[id][yl],(freq[ls1]+20.0)/(freq[mf1]+20.0)))
         prrtls=0
         prrtmf=0
         for yl2 in ('A','B','C','D','E','F','G'):
