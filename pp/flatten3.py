@@ -10,7 +10,6 @@ y={}
 lmax=0
 freq={}
 hf=defaultdict(int)
-pair=defaultdict(int)
 mf={}
 age={}
 mfage={}
@@ -62,6 +61,7 @@ for yl in ('A','B','C','D','E','F','G'):
     #        f.write(',%s_mf_%d' % (yl2,l))
     f.write('\n')
     freq=defaultdict(int)
+    pair=defaultdict(int)
     for id in y.keys():
         mf1 = mf[id][yl][-1]
         ls1 = last[id][yl]
