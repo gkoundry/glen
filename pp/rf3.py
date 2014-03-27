@@ -68,7 +68,7 @@ for mf in (1,2,4,8,):
             X=pandas.read_csv('train3'+yl+'.csv')
             y=X.pop('y')
             id=X.pop('id')
-            prt=X.pop('prrt')
+            #prt=X.pop('prrt')
 #            if all_y is None:
 #                all_y=np.copy(y)
 #            else:
@@ -82,7 +82,7 @@ for mf in (1,2,4,8,):
             #X['lspr'].apply(lambda x:freq[x])
             kf = KFold(X.shape[0], 10, shuffle=True, random_state=1234)
             #xtrain,xtest,ytrain,ytest = train_test_split(X,y,test_size=0.6,random_state=42)
-            m=RandomForestClassifier(n_estimators=100,max_features=mf,min_samples_leaf=mn,n_jobs=10,random_state=1234)
+            m=RandomForestClassifier(n_estimators=100,max_features=mf,min_samples_leaf=mn,n_jobs=3,random_state=1234)
             #m=LogisticRegression(C=mf,)
             #m=GradientBoostingClassifier(n_estimators=mn,max_depth=mf)
             i=0
