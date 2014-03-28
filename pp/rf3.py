@@ -53,8 +53,8 @@ def dump(t,n,l):
         dump(t,t.tree_.children_right[n],l+1)
 
 #for mf in (4,):
-for mf in (1,2,4,8,):
-    for mn in (4,8,16,32,64,128):
+for mf in (1,2,4,6,8,10):
+    for mn in (1,2,3,4,8,16,32,64,128):
     #for mn in (64,):
         tot=0
         all_pred=None
@@ -86,7 +86,7 @@ for mf in (1,2,4,8,):
             #X['lspr'].apply(lambda x:freq[x])
             kf = KFold(X.shape[0], 10, shuffle=True, random_state=1234)
             #xtrain,xtest,ytrain,ytest = train_test_split(X,y,test_size=0.6,random_state=42)
-            m=RandomForestClassifier(n_estimators=10,max_features=mf,min_samples_leaf=mn,n_jobs=3,random_state=1234)
+            m=RandomForestClassifier(n_estimators=200,max_features=mf,min_samples_leaf=mn,n_jobs=3,random_state=1234)
             #m=LogisticRegression(C=mf,)
             #m=GradientBoostingClassifier(n_estimators=mn,max_depth=mf)
             i=0

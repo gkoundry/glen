@@ -61,6 +61,7 @@ for l in f:
             age[v]+=1
 
 def rbin(x):
+    return x
     if x<0.526:
         return -2
     elif x<0.85:
@@ -73,6 +74,7 @@ def rbin(x):
         return 2
 
 def pbin(x):
+    return x
     if x<0.4615:
         return -2
     elif x<0.7536:
@@ -85,6 +87,9 @@ def pbin(x):
         return 2
 
 def cbin(x,y):
+    x=int(x)
+    y=int(y)
+    return (x+10.0)/(y+10.0)
     if x==y:
         return 0
     elif x<y:
