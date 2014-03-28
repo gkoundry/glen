@@ -1,4 +1,6 @@
 import pandas
+import cPickle
+import sys
 from math import log
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, AdaBoostClassifier, GradientBoostingClassifier
@@ -50,24 +52,26 @@ def dump(t,n,l):
         print ' '*l+' f'+str(t.tree_.feature[n])+' > '+str(t.tree_.threshold[n])+' '+str(t.tree_.n_node_samples[t.tree_.children_right[n]])+' '+str(t.tree_.value[t.tree_.children_right[n]])
         dump(t,t.tree_.children_right[n],l+1)
 
-#for mf in (1,):
+#for mf in (4,):
 for mf in (1,2,4,8,):
     for mn in (4,8,16,32,64,128):
-    #for mn in (3,):
+    #for mn in (64,):
         tot=0
-        #all_pred=None
+        all_pred=None
         #all_y=None
-        #idp=None
+        idp=None
         sc1t=0
         sc2t=0
         tt=0
         ll1=0
         ll1t=0
         ll2=0
+        pred={}
         for yl in ('A','B','C','D','E','F','G'):
             X=pandas.read_csv('train3'+yl+'.csv')
             y=X.pop('y')
             id=X.pop('id')
+            pred[yl] = {}
             #prt=X.pop('prrt')
 #            if all_y is None:
 #                all_y=np.copy(y)
@@ -82,11 +86,10 @@ for mf in (1,2,4,8,):
             #X['lspr'].apply(lambda x:freq[x])
             kf = KFold(X.shape[0], 10, shuffle=True, random_state=1234)
             #xtrain,xtest,ytrain,ytest = train_test_split(X,y,test_size=0.6,random_state=42)
-            m=RandomForestClassifier(n_estimators=100,max_features=mf,min_samples_leaf=mn,n_jobs=3,random_state=1234)
+            m=RandomForestClassifier(n_estimators=10,max_features=mf,min_samples_leaf=mn,n_jobs=3,random_state=1234)
             #m=LogisticRegression(C=mf,)
             #m=GradientBoostingClassifier(n_estimators=mn,max_depth=mf)
             i=0
-            #pred=None
             for train,test in kf:
                 xtrain=X.values[train]
                 xtest=X.values[test]
@@ -96,29 +99,22 @@ for mf in (1,2,4,8,):
                 #for t in m.estimators_:
                 #    print 'root '+str(t.tree_.node_count)
                 #    dump(t,0,0)
+                #sys.exit(0)
                 p=m.predict_proba(xtest)[:,1]
                 pt=m.predict_proba(xtrain)[:,1]
                 #p=np.ones(p.shape[0])
-                #pp=np.ones(p.shape[0])
                 for i in range(xtest.shape[0]):
                     if ytest[i]==1:
                         sc1t+=1
                     if p[i]>0.5:
+                        pred[yl][idtest[i]]=xtest[i][0]
                         if ytest[i]==1:
                             sc2t+=1
                     else:
+                        pred[yl][idtest[i]]=xtest[i][1]
                         if ytest[i]==0:
                             sc2t+=1
                     tt += 1
-#                if pred is None:
-#                    pred = pp
-#                else:
-#                    pred = np.concatenate([pred,pp],axis=1)
-#                if yl=='A':
-#                    if idp is None:
-#                        idp = id[test]
-#                    else:
-#                        idp = np.concatenate([idp,id[test]])
                 #np.savetxt('test'+str(i)+yl+'.out',np.column_stack((y.values[test],p)),fmt='%f')
                 i+=1
                 sc1=accuracy_score(y.values[test],p)
@@ -127,18 +123,7 @@ for mf in (1,2,4,8,):
                 ll1t+=log_loss(y.values[train],pt)
                 ll2+=log_loss(y.values[test],np.ones(y.values[test].shape[0]))
                 tot += sc1-sc2
-#            if all_pred is None:
-#                all_pred = np.column_stack([idp,pred])
-#            else:
-#                all_pred = np.column_stack([all_pred,pred])
-                #print '\n'.join([str(i) for i in zip(X.columns,m.feature_importances_)])
-            #sc1 = cross_val_score(m, X, y, cv=kf, scoring=MAD, n_jobs=3).mean()
-            #sc2=accuracy_score(y,np.ones(y.shape[0]))
-            #np.savetxt('test%d_%d_%s.out' % (mf,mn,yl),np.atleast_2d(m.predict(xtest)))
-            #sc1=accuracy_score(ytest,m.predict(xtest))
-            #sc2=accuracy_score(ytest,np.ones(ytest.shape[0]))
-            #print '%s %f' % (yl,sc1)
-            #print '%s %f' % (yl,sc2)
         print '%d %d %f last %d pred %d tot %d ll %f %f' % (mf,mn,tot,sc1t,sc2t,tt,ll1/10/7,ll1t/10/7)
         #np.savetxt('testp.out',all_pred,fmt='%f')
+        #cPickle.dump(pred,open('pred.pkl','wb'))
         #np.savetxt('testy.ouy',all_y,fmt='%f')
