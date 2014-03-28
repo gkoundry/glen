@@ -50,10 +50,10 @@ def dump(t,n,l):
         print ' '*l+' f'+str(t.tree_.feature[n])+' > '+str(t.tree_.threshold[n])+' '+str(t.tree_.n_node_samples[t.tree_.children_right[n]])+' '+str(t.tree_.value[t.tree_.children_right[n]])
         dump(t,t.tree_.children_right[n],l+1)
 
-#for mf in (3,4,6,):
+#for mf in (1,):
 for mf in (1,2,4,8,):
     for mn in (4,8,16,32,64,128):
-    #for mn in (40,52,64,80,100,):
+    #for mn in (3,):
         tot=0
         #all_pred=None
         #all_y=None
@@ -93,6 +93,9 @@ for mf in (1,2,4,8,):
                 ytest=y.values[test]
                 idtest=id.values[test]
                 m.fit(xtrain,y.values[train])
+                #for t in m.estimators_:
+                #    print 'root '+str(t.tree_.node_count)
+                #    dump(t,0,0)
                 p=m.predict_proba(xtest)[:,1]
                 pt=m.predict_proba(xtrain)[:,1]
                 #p=np.ones(p.shape[0])
@@ -136,9 +139,6 @@ for mf in (1,2,4,8,):
             #sc2=accuracy_score(ytest,np.ones(ytest.shape[0]))
             #print '%s %f' % (yl,sc1)
             #print '%s %f' % (yl,sc2)
-#            for t in m.estimators_:
-#                print 'root '+str(t.tree_.node_count)
-#                dump(t,0,0)
         print '%d %d %f last %d pred %d tot %d ll %f %f' % (mf,mn,tot,sc1t,sc2t,tt,ll1/10/7,ll1t/10/7)
         #np.savetxt('testp.out',all_pred,fmt='%f')
         #np.savetxt('testy.ouy',all_y,fmt='%f')

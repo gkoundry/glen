@@ -51,6 +51,28 @@ for l in f:
                 age[v]=0
             age[v]+=1
 
+def rbin(x):
+    if x<0.526:
+        return -2
+    elif x<0.85:
+        return -1
+    elif x<1.1147:
+        return 0
+    elif x<1.522:
+        return 1
+    else:
+        return 2
+
+def pbin(x):
+    return x
+    if x<0.35:
+        return -1
+    else:
+        if x<1.4:
+            return 0
+        else:
+            return 1
+
 for yl in ('A','B','C','D','E','F','G'):
     f = open ('train3'+yl+'.csv','w')
     f.write('id,y,last,mf,quotes,mfc,mfp,lsc,lsp,mfage,lsmfpr,prrt')
@@ -66,10 +88,11 @@ for yl in ('A','B','C','D','E','F','G'):
         mf1 = mf[id][yl][-1]
         ls1 = last[id][yl]
         ans = y[id][yl]
+        for yl2 in ('A','B','C','D','E','F','G'):
+            if yl!=yl2:
+                pair['%s,%s,%s,%s' % (yl,yl2,last[id][yl],last[id][yl2])]+=1
         if mf1==ls1 or ans not in (mf1,ls1):
             freq[ans]+=1
-            for yl2 in ('A','B','C','D','E','F','G'):
-                pair['%s,%s,%s,%s' % (yl,yl2,y[id][yl],y[id][yl2])]+=1
 
     for id in y.keys():
         mf1 = mf[id][yl][-1]
@@ -84,7 +107,7 @@ for yl in ('A','B','C','D','E','F','G'):
         for yl2 in ('A','B','C','D','E','F','G'):
             prrtls += pair['%s,%s,%s,%s' % (yl,yl2,ls1,last[id][yl2])]
             prrtmf += pair['%s,%s,%s,%s' % (yl,yl2,mf1,mf[id][yl2][-1])]
-        f.write(',%f' % ((prrtls+10.0)/(prrtmf+10)))
+        f.write(',%f' % pbin((prrtls+10.0)/(prrtmf+10)))
         #for yl2 in ('A','B','C','D','E','F','G'):
         #   for l in range(len(levels[yl2])):
         #       f.write(','+str(int(sorted(list(levels[yl2]))[l]==ls1)))
