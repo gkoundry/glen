@@ -52,10 +52,10 @@ def dump(t,n,l):
         print ' '*l+' f'+str(t.tree_.feature[n])+' > '+str(t.tree_.threshold[n])+' '+str(t.tree_.n_node_samples[t.tree_.children_right[n]])+' '+str(t.tree_.value[t.tree_.children_right[n]])
         dump(t,t.tree_.children_right[n],l+1)
 
-for mf in (2,4,9):
+for mf in (5,):
 #for mf in (1,2,4,6,8,10):
     #for mn in (1,2,3,4,8,16,32,64,128):
-    for mn in (100,130,180):
+    for mn in (100,):
         tot=0
         all_pred=None
         #all_y=None
@@ -100,12 +100,12 @@ for mf in (2,4,9):
             #X['mfpr'].apply(lambda x:freq[x])
             #X['lspr']=X['last']
             #X['lspr'].apply(lambda x:freq[x])
-            kf = KFold(X.shape[0], 10, shuffle=True, random_state=1234)
-            #xtrain,xtest,ytrain,ytest = train_test_split(X,y,test_size=0.6,random_state=42)
-            m=RandomForestClassifier(n_estimators=30,max_features=mf,min_samples_leaf=mn,n_jobs=10,random_state=1234)
+            #kf = KFold(X.shape[0], 10, shuffle=True, random_state=1234)
+            xtrain,xtest,ytrain,ytest = train_test_split(X,y,test_size=0.6,random_state=42)
+            m=RandomForestClassifier(n_estimators=100,max_features=mf,min_samples_leaf=mn,n_jobs=10,random_state=1234)
             #m=LogisticRegression(C=mf,)
             #m=GradientBoostingClassifier(n_estimators=mn,max_depth=mf)
-            i=0
+            ll=0
             #for train,test in kf:
             for train,test in cvs:
                 xtrain=X.values[train]
@@ -132,15 +132,15 @@ for mf in (2,4,9):
                         if ytest[i]==0:
                             sc2t+=1
                     tt += 1
-                #np.savetxt('test'+str(i)+yl+'.out',np.column_stack((y.values[test],p)),fmt='%f')
-                i+=1
+                np.savetxt('test'+str(i)+yl+'.out',np.column_stack((y.values[test],p)),fmt='%f')
+                ll+=1
                 sc1=accuracy_score(y.values[test],p)
                 sc2=accuracy_score(y.values[test],np.ones(y.values[test].shape[0]))
                 ll1+=log_loss(y.values[test],p)
                 ll1t+=log_loss(y.values[train],pt)
                 ll2+=log_loss(y.values[test],np.ones(y.values[test].shape[0]))
                 tot += sc1-sc2
-        print '%d %d %f last %d pred %d tot %d ll %f %f' % (mf,mn,tot,sc1t,sc2t,tt,ll1/10/7,ll1t/10/7)
+        print '%d %d %f last %d pred %d tot %d ll %f %f' % (mf,mn,tot,sc1t,sc2t,tt,ll1/ll/7,ll1t/ll/7)
         #np.savetxt('testp.out',all_pred,fmt='%f')
         cPickle.dump(pred,open('pred.pkl','wb'))
         #np.savetxt('testy.ouy',all_y,fmt='%f')
