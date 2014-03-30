@@ -14,11 +14,13 @@ freq={}
 last={}
 llast={}
 costw = {}
+chist = {}
 avg_co = {}
 risk = {}
 for col in ('A','B','C','D','E','F','G'):
     prior[col] = defaultdict(int)
     costw[col] = defaultdict(list)
+    chist[col] = defaultdict(list)
     avg_co[col] = defaultdict(list)
 
 f=open('trains3.csv','r')
@@ -45,6 +47,7 @@ for l in f:
         val = a[ord(col)-48]
         if col not in age[id]:
             age[id][col] = {}
+            costdir[id][col] = {}
         levels[col].add(val)
         if rt=='1':
             last_val = lasta[ord(col)-48]
@@ -55,6 +58,7 @@ for l in f:
             ans[id][col] = val
             prior[col][last_val]+=1
             hist[col] = [-1]
+            costdir[id][col]=chist[col][-1]*1.0/(sum(chist[col][:-1])*1.0/len(chist[col][:-1]))
             if len(costw[col].keys())>1:
                 for i in costw[col].keys():
                     costwo = []
@@ -63,6 +67,7 @@ for l in f:
                             costwo.extend(costw[col][j])
                     avg_co[col][i].append(mean(costw[col][i])/mean(costwo))
             costw[col] = defaultdict(list)
+            chist[col] = defaultdict(list)
         else:
             if col not in freq[id]:
                 freq[id][col] = defaultdict(int)
@@ -75,6 +80,7 @@ for l in f:
             age[id][col][val]=0
             hist[col].append(val)
             costw[col][val].append(cs)
+            chist[col].append(cs)
     lasta=a
 
 rd = {
@@ -88,7 +94,7 @@ for col in ('A','B','C','D','E','F','G'):
     for i in avg_co[col].keys():
         avg_co[col][i] = mean(avg_co[col][i])
     f=open('train4'+col+'.csv','w')
-    f.write("id,y,ls,mf,agemf,prls,prmf,frls,frmf,quotes,nfrls,nfrmf,frrt,prrt,csls,csmf,risk0,risk1,risk2,risk3,risk4\n")
+    f.write("id,y,ls,mf,agemf,prls,prmf,frls,frmf,quotes,nfrls,nfrmf,frrt,prrt,csls,csmf,risk0,risk1,risk2,risk3,risk4,csdir\n")
     for id in ans.keys():
         ls = last[id][col]
         #mf = mfreq[id][col]
@@ -98,6 +104,7 @@ for col in ('A','B','C','D','E','F','G'):
             continue
         f.write("%s,%d,%s,%s" % (id,ls==ans[id][col],ls,mf))
         f.write(",%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f" % (age[id][col][mf],prior[col][ls],prior[col][mf],freq[id][col][ls],freq[id][col][mf],quotes[id],freq[id][col][ls]*1.0/quotes[id],freq[id][col][mf]*1.0/quotes[id],(freq[id][col][mf]+10.0)/(freq[id][col][ls]+10.0),(prior[col][mf]+10.0)/(prior[col][ls]+10.0),avg_co[col][ls],avg_co[col][mf]))
-        f.write(",%s,%s,%s,%s,%s\n" % rd[risk[id]])
+        f.write(",%s,%s,%s,%s,%s" % rd[risk[id]])
+        f.write(',%f\n' % cdir[id][col])
     f.close()
 
