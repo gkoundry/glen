@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, AdaB
 from sklearn.cross_validation import train_test_split,KFold,cross_val_score
 from sklearn.metrics import make_scorer, mean_absolute_error
 from sklearn.linear_model import LogisticRegression
-from TreeBoost import TreeBoost
+#from TreeBoost import TreeBoost
 
 MAD = make_scorer(mean_absolute_error, greater_is_better=False)
 # bench=0.560329453968
@@ -54,10 +54,10 @@ def dump(t,n,l):
         dump(t,t.tree_.children_right[n],l+1)
 
 for trees in (100,):
-    for mf in (2,5,9):
+    for mf in (7,):
     #for mf in (1,2,4,8,16):
         #for mn in (1,5,15,40,):
-        for mn in (5,15,50,):
+        for mn in (25,):
             tot=0
             all_pred=None
             #all_y=None
@@ -104,9 +104,9 @@ for trees in (100,):
                 #X['lspr'].apply(lambda x:freq[x])
                 #kf = KFold(X.shape[0], 10, shuffle=True, random_state=1234)
                 #xtrain,xtest,ytrain,ytest = train_test_split(X,y,test_size=0.6,random_state=42)
-                #m=RandomForestClassifier(n_estimators=trees,max_features=mf,min_samples_leaf=mn,n_jobs=3,random_state=1234)
+                m=RandomForestClassifier(n_estimators=trees,max_features=mf,min_samples_leaf=mn,n_jobs=3,random_state=1234)
                 #m=LogisticRegression(C=mf,)
-                m=TreeBoost()
+                #m=TreeBoost()
                 ll=0
                 #for train,test in kf:
                 for train,test in cvs:
@@ -115,14 +115,16 @@ for trees in (100,):
                     ytrain=y.values[train]
                     ytest=y.values[test]
                     idtest=id.values[test]
-                    #m.fit(xtrain,y.values[train])
-                    m.fit(np.ascontiguousarray(xtrain).astype(float),ytrain.astype(float),tree_count=trees,min_node_size=mn,mtry=mf,seed=1234,distribution="RandomForest",max_depth=999)
+                    m.fit(xtrain,y.values[train])
+                    #m.fit(np.ascontiguousarray(xtrain).astype(float),ytrain.astype(float),tree_count=trees,min_node_size=mn,mtry=mf,seed=1234,distribution="RandomForest",max_depth=999)
                     #for t in m.estimators_:
                     #    print 'root '+str(t.tree_.node_count)
                     #    dump(t,0,0)
                     #sys.exit(0)
-                    p=m.predict(np.ascontiguousarray(xtest).astype(float))
-                    pt=m.predict(np.ascontiguousarray(xtrain).astype(float))
+                    #p=m.predict(np.ascontiguousarray(xtest).astype(float))
+                    #pt=m.predict(np.ascontiguousarray(xtrain).astype(float))
+                    p=m.predict_proba(np.ascontiguousarray(xtest).astype(float))[:,1]
+                    pt=m.predict_proba(np.ascontiguousarray(xtrain).astype(float))[:,1]
                     #p=np.ones(p.shape[0])
                     for i in range(xtest.shape[0]):
                         if ytest[i]==1:
