@@ -15,6 +15,7 @@ last={}
 llast={}
 costw = {}
 avg_co = {}
+risk = {}
 for col in ('A','B','C','D','E','F','G'):
     prior[col] = defaultdict(int)
     costw[col] = defaultdict(list)
@@ -35,9 +36,11 @@ for l in f:
         mfreq[id] = {}
         last[id] = {}
         llast[id] = {}
-    quotes[id] += 1
     if rt=='1':
         ans[id]={}
+    else:
+        quotes[id] += 1
+        risk[id] = a[11]
     for col in ('A','B','C','D','E','F','G'):
         val = a[ord(col)-48]
         if col not in age[id]:
@@ -74,11 +77,18 @@ for l in f:
             costw[col][val].append(cs)
     lasta=a
 
+rd = {
+    'NA': (1,0,0,0,0),
+    '1': (0,1,0,0,0),
+    '2': (0,0,1,0,0),
+    '3': (0,0,0,1,0),
+    '4': (0,0,0,0,1),
+}
 for col in ('A','B','C','D','E','F','G'):
     for i in avg_co[col].keys():
         avg_co[col][i] = mean(avg_co[col][i])
     f=open('train4'+col+'.csv','w')
-    f.write("id,y,ls,mf,agemf,prls,prmf,frls,frmf,quotes,nfrls,nfrmf,frrt,prrt,csls,csmf\n")
+    f.write("id,y,ls,mf,agemf,prls,prmf,frls,frmf,quotes,nfrls,nfrmf,frrt,prrt,csls,csmf,risk0,risk1,risk2,risk3,risk4\n")
     for id in ans.keys():
         ls = last[id][col]
         #mf = mfreq[id][col]
@@ -87,6 +97,7 @@ for col in ('A','B','C','D','E','F','G'):
         #if ls==mf or ans[id][col] not in (ls,mf):
             continue
         f.write("%s,%d,%s,%s" % (id,ls==ans[id][col],ls,mf))
-        f.write(",%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f\n" % (age[id][col][mf],prior[col][ls],prior[col][mf],freq[id][col][ls],freq[id][col][mf],quotes[id],freq[id][col][ls]*1.0/quotes[id],freq[id][col][mf]*1.0/quotes[id],(freq[id][col][mf]+10.0)/(freq[id][col][ls]+10.0),(prior[col][mf]+10.0)/(prior[col][ls]+10.0),avg_co[col][ls],avg_co[col][mf]))
+        f.write(",%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f" % (age[id][col][mf],prior[col][ls],prior[col][mf],freq[id][col][ls],freq[id][col][mf],quotes[id],freq[id][col][ls]*1.0/quotes[id],freq[id][col][mf]*1.0/quotes[id],(freq[id][col][mf]+10.0)/(freq[id][col][ls]+10.0),(prior[col][mf]+10.0)/(prior[col][ls]+10.0),avg_co[col][ls],avg_co[col][mf]))
+        f.write(",%s,%s,%s,%s,%s\n" % rd[risk[id]])
     f.close()
 
