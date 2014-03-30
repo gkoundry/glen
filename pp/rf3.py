@@ -52,10 +52,10 @@ def dump(t,n,l):
         print ' '*l+' f'+str(t.tree_.feature[n])+' > '+str(t.tree_.threshold[n])+' '+str(t.tree_.n_node_samples[t.tree_.children_right[n]])+' '+str(t.tree_.value[t.tree_.children_right[n]])
         dump(t,t.tree_.children_right[n],l+1)
 
-for mf in (5,):
-#for mf in (1,2,4,6,8,10):
-    #for mn in (1,2,3,4,8,16,32,64,128):
-    for mn in (100,):
+for mf in (4,):
+#for mf in (2,4,8):
+    #for mn in (1,4,16,64):
+    for mn in (16,):
         tot=0
         all_pred=None
         #all_y=None
@@ -102,7 +102,7 @@ for mf in (5,):
             #X['lspr'].apply(lambda x:freq[x])
             #kf = KFold(X.shape[0], 10, shuffle=True, random_state=1234)
             xtrain,xtest,ytrain,ytest = train_test_split(X,y,test_size=0.6,random_state=42)
-            m=RandomForestClassifier(n_estimators=100,max_features=mf,min_samples_leaf=mn,n_jobs=10,random_state=1234)
+            m=RandomForestClassifier(n_estimators=100,max_features=mf,min_samples_leaf=mn,n_jobs=3,random_state=1234)
             #m=LogisticRegression(C=mf,)
             #m=GradientBoostingClassifier(n_estimators=mn,max_depth=mf)
             ll=0
@@ -132,7 +132,7 @@ for mf in (5,):
                         if ytest[i]==0:
                             sc2t+=1
                     tt += 1
-                np.savetxt('test'+str(i)+yl+'.out',np.column_stack((y.values[test],p)),fmt='%f')
+                #np.savetxt('test'+str(i)+yl+'.out',np.column_stack((y.values[test],p)),fmt='%f')
                 ll+=1
                 sc1=accuracy_score(y.values[test],p)
                 sc2=accuracy_score(y.values[test],np.ones(y.values[test].shape[0]))
