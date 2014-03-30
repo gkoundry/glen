@@ -53,11 +53,11 @@ def dump(t,n,l):
         print ' '*l+' f'+str(t.tree_.feature[n])+' > '+str(t.tree_.threshold[n])+' '+str(t.tree_.n_node_samples[t.tree_.children_right[n]])+' '+str(t.tree_.value[t.tree_.children_right[n]])
         dump(t,t.tree_.children_right[n],l+1)
 
-for trees in (100,50,50,50,50,):
-    for mf in (5,):
+for trees in (100,150,200,):
+    for mf in (3,):
     #for mf in (1,2,4,8,16):
         #for mn in (1,5,15,40,):
-        for mn in (30,):
+        for mn in (1,):
             tot=0
             all_pred=None
             #all_y=None
@@ -106,17 +106,17 @@ for trees in (100,50,50,50,50,):
                 #xtrain,xtest,ytrain,ytest = train_test_split(X,y,test_size=0.6,random_state=42)
                 #m=RandomForestClassifier(n_estimators=trees,max_features=mf,min_samples_leaf=mn,n_jobs=3,random_state=1234)
                 #m=LogisticRegression(C=mf,)
-                m=TreeBoost()
                 ll=0
                 #for train,test in kf:
                 for train,test in cvs:
+                    m=TreeBoost()
                     xtrain=X.values[train]
                     xtest=X.values[test]
                     ytrain=y.values[train]
                     ytest=y.values[test]
                     idtest=id.values[test]
                     #m.fit(xtrain,y.values[train])
-                    m.fit(np.ascontiguousarray(xtrain).astype(float),ytrain.astype(float),tree_count=trees,min_node_size=mn,seed=1234,distribution="Bernoulli",max_depth=mf)
+                    m.fit(np.ascontiguousarray(xtrain).astype(float),ytrain.astype(float),tree_count=trees,min_node_size=mn,seed=1234,distribution="Bernoulli",max_depth=mf,step_size=0.05)
                     #m.fit(np.ascontiguousarray(xtrain).astype(float),ytrain.astype(float),tree_count=trees,min_node_size=mn,mtry=mf,seed=1234,distribution="RandomForest",max_depth=999)
                     #for t in m.estimators_:
                     #    print 'root '+str(t.tree_.node_count)
