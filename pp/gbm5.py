@@ -8,17 +8,19 @@ from sklearn.cross_validation import train_test_split,KFold,cross_val_score
 from sklearn.metrics import make_scorer, mean_absolute_error
 from sklearn.linear_model import LogisticRegression
 from TreeBoost import TreeBoost
-#t150 mf4 mn1 0.010227 last 699623 pred 700063 tot 761218 ll 0.252572 0.245360 ym 0.275139
-#t300 mf3 mn1 0.008972 last 699623 pred 700016 tot 761218 ll 0.252781 0.246561 ym 0.275139
+#b
+#t125 mf4 mn1 0.011762 last 699623 pred 700117 tot 761218 ll 0.249331 0.241351 ym 0.275139
+#t150 mf4 mn1 0.008811 last 699623 pred 700127 tot 761218 ll 0.249210 0.240061 ym 0.275139
+#t175 mf4 mn1 0.011839 last 699623 pred 700123 tot 761218 ll 0.249187 0.238983 ym 0.275139
+#t200 mf4 mn1 0.011778 last 699623 pred 700130 tot 761218 ll 0.249189 0.237948 ym 0.275139
+#t300 mf4 mn1 0.009808 last 699623 pred 700063 tot 761218 ll 0.249424 0.234428 ym 0.275139
+#a
+#t400 mf3 mn1 0.010816 last 699623 pred 700086 tot 761218 ll 0.314307 0.309529 ym 0.275139
+#t250 mf4 mn1 0.012872 last 699623 pred 700162 tot 761218 ll 0.312688 0.306284 ym 0.27513
+#t350 mf4 mn1 0.013684 last 699623 pred 700197 tot 761218 ll 0.310938 0.302757 ym 0.275139
+#t200 mf5 mn1 0.013268 last 699623 pred 700178 tot 761218 ll 0.310191 0.300842 ym 0.275139
 
 MAD = make_scorer(mean_absolute_error, greater_is_better=False)
-# bench=0.560329453968
-# 10 30 t500 0.541129780435
-# 40 30 t200 0.559272239975
-# 40 30 t500 0.559272239975
-# 60 300 0.559942273992
-#4 64 0.002068 last 44169 pred 44171 tot 51445 ll 0.375124
-
 def log_loss(act,pred):
     c=0
     t=0
@@ -56,11 +58,11 @@ def dump(t,n,l):
         dump(t,t.tree_.children_right[n],l+1)
 
 LR=0.05
-for trees in (150,):
+for trees in (175,):
     for mf in (4,):
     #for mf in (1,2,4,8,16):
         #for mn in (1,5,15,40,):
-        for mn in (1,):
+        for mn in (30,):
             tot=0
             all_pred=None
             #all_y=None
@@ -72,13 +74,17 @@ for trees in (150,):
             ll1t=0
             ll2=0
             pred={}
+            ri = None
             for yl in ('A','B','C','D','E','F','G'):
                 pred[yl] = {}
-                X=pandas.read_csv('train4'+yl+'.csv')
+                X=pandas.read_csv('train5'+yl+'.csv')
                 y=X.pop('y')
                 id=X.pop('id')
+                cols=X.columns
                 test=[[],[],[]]
                 train=[[],[],[]]
+                if ri is None:
+                    ri=pandas.DataFrame({'cols':cols})
                 for i in range(id.shape[0]):
                     if int(str(id[i])[-2:])<33:
                         test[0].append(i)
@@ -119,6 +125,7 @@ for trees in (150,):
                     ytest=y.values[test]
                     idtest=id.values[test]
                     #m.fit(xtrain,y.values[train])
+                    #m.fit(np.ascontiguousarray(xtrain).astype(float),ytrain.astype(float),tree_count=trees,min_node_size=mn,seed=1234,distribution="AdaBoost",max_depth=mf,step_size=LR)
                     m.fit(np.ascontiguousarray(xtrain).astype(float),ytrain.astype(float),tree_count=trees,min_node_size=mn,seed=1234,distribution="Bernoulli",max_depth=mf,step_size=LR)
                     #m.fit(np.ascontiguousarray(xtrain).astype(float),ytrain.astype(float),tree_count=trees,min_node_size=mn,mtry=mf,seed=1234,distribution="RandomForest",max_depth=999)
                     #for t in m.estimators_:
@@ -127,6 +134,9 @@ for trees in (150,):
                     #sys.exit(0)
                     p=m.predict(np.ascontiguousarray(xtest).astype(float))
                     pt=m.predict(np.ascontiguousarray(xtrain).astype(float))
+                    #ri[yl+str(ll)]=m.get_relative_influence()
+                    ri[yl+str(ll)]=m.get_importance(True)
+                    sys.exit(0)
                     #p=np.ones(p.shape[0])
                     for i in range(xtest.shape[0]):
                         if ytest[i]==1:
@@ -149,6 +159,7 @@ for trees in (150,):
                     ll2+=log_loss(ytest,np.repeat(np.mean(ytrain),ytest.shape[0]))
                     tot += sc1-sc2
             print 't%d mf%d mn%d %f LR %f last %d pred %d tot %d ll %f %f ym %f' % (trees,mf,mn,LR,tot,sc1t,sc2t,tt,ll1/ll/7,ll1t/ll/7,ll2/ll/7)
+            ri.to_csv('ri.csv')
             #np.savetxt('testp.out',all_pred,fmt='%f')
             #cPickle.dump(pred,open('pred.pkl','wb'))
             #np.savetxt('testy.ouy',all_y,fmt='%f')

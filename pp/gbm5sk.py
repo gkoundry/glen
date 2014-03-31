@@ -56,7 +56,7 @@ def dump(t,n,l):
         dump(t,t.tree_.children_right[n],l+1)
 
 LR=0.05
-for trees in (150,):
+for trees in (100,150,200):
     for mf in (4,):
     #for mf in (1,2,4,8,16):
         #for mn in (1,5,15,40,):
@@ -74,7 +74,7 @@ for trees in (150,):
             pred={}
             for yl in ('A','B','C','D','E','F','G'):
                 pred[yl] = {}
-                X=pandas.read_csv('train4'+yl+'.csv')
+                X=pandas.read_csv('train5'+yl+'.csv')
                 y=X.pop('y')
                 id=X.pop('id')
                 test=[[],[],[]]
@@ -109,24 +109,26 @@ for trees in (150,):
                 #xtrain,xtest,ytrain,ytest = train_test_split(X,y,test_size=0.6,random_state=42)
                 #m=RandomForestClassifier(n_estimators=trees,max_features=mf,min_samples_leaf=mn,n_jobs=3,random_state=1234)
                 #m=LogisticRegression(C=mf,)
+                m=GradientBoostingClassifier(n_estimators=trees,learning_rate=0.05,min_samples_leaf=mn,max_depth=mf)
                 ll=0
                 #for train,test in kf:
                 for train,test in cvs:
-                    m=TreeBoost()
+                    #m=TreeBoost()
                     xtrain=X.values[train]
                     xtest=X.values[test]
                     ytrain=y.values[train]
                     ytest=y.values[test]
                     idtest=id.values[test]
-                    #m.fit(xtrain,y.values[train])
-                    m.fit(np.ascontiguousarray(xtrain).astype(float),ytrain.astype(float),tree_count=trees,min_node_size=mn,seed=1234,distribution="Bernoulli",max_depth=mf,step_size=LR)
+                    m.fit(xtrain,y.values[train])
+                    #m.fit(np.ascontiguousarray(xtrain).astype(float),ytrain.astype(float),tree_count=trees,min_node_size=mn,seed=1234,distribution="AdaBoost",max_depth=mf,step_size=LR)
+                    #m.fit(np.ascontiguousarray(xtrain).astype(float),ytrain.astype(float),tree_count=trees,min_node_size=mn,seed=1234,distribution="Bernoulli",max_depth=mf,step_size=LR)
                     #m.fit(np.ascontiguousarray(xtrain).astype(float),ytrain.astype(float),tree_count=trees,min_node_size=mn,mtry=mf,seed=1234,distribution="RandomForest",max_depth=999)
                     #for t in m.estimators_:
                     #    print 'root '+str(t.tree_.node_count)
                     #    dump(t,0,0)
                     #sys.exit(0)
-                    p=m.predict(np.ascontiguousarray(xtest).astype(float))
-                    pt=m.predict(np.ascontiguousarray(xtrain).astype(float))
+                    p=m.predict_proba(np.ascontiguousarray(xtest).astype(float))[:,-1]
+                    pt=m.predict_proba(np.ascontiguousarray(xtrain).astype(float))[:,-1]
                     #p=np.ones(p.shape[0])
                     for i in range(xtest.shape[0]):
                         if ytest[i]==1:
@@ -150,5 +152,5 @@ for trees in (150,):
                     tot += sc1-sc2
             print 't%d mf%d mn%d %f LR %f last %d pred %d tot %d ll %f %f ym %f' % (trees,mf,mn,LR,tot,sc1t,sc2t,tt,ll1/ll/7,ll1t/ll/7,ll2/ll/7)
             #np.savetxt('testp.out',all_pred,fmt='%f')
-            #cPickle.dump(pred,open('pred.pkl','wb'))
+            cPickle.dump(pred,open('pred.pkl','wb'))
             #np.savetxt('testy.ouy',all_y,fmt='%f')

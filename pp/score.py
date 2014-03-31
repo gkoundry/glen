@@ -1,11 +1,12 @@
 import cPickle
 pred=cPickle.load(open('pred.pkl','rb'))
-f=open('trainrs.csv','r')
+f=open('trains3.csv','r')
 h=f.readline()
 c=0
 t=0
 c1=0
 t1=0
+sm=0
 for l in f:
     a=l.rstrip().split(',')
     if a[2]=='1':
@@ -22,6 +23,8 @@ for l in f:
             c+=1
         if a[17:24]==pl:
             c1+=1
+        if p==pl:
+            sm+=1
         #print str(a[17:24])
         #print ' '+str(pl)
         #print ' '+str(p)
@@ -30,3 +33,4 @@ for l in f:
 print c*1.0/t
 print c1*1.0/t
 print str(c1)+' '+str(t)
+print sm
