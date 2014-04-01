@@ -62,7 +62,7 @@ def dump(t,n,l):
         dump(t,t.tree_.children_right[n],l+1)
 
 LR=0.05
-for trees in (300,):
+for trees in (3,):
 #for trees in (175,):
     for mf in (4,):
     #for mf in (1,2,4,8,16):
@@ -124,6 +124,10 @@ for trees in (300,):
                 #m=LogisticRegression(C=mf,)
                 ll=0
                 #for train,test in kf:
+                sc1t_=0
+                sc2t_=0
+                ll1t_=0
+                ll1_=0
                 for train,test in cvs:
                     m=TreeBoost()
                     xtrain=X.values[train]
@@ -149,14 +153,17 @@ for trees in (300,):
                     for i in range(xtest.shape[0]):
                         if ytest[i]==1:
                             sc1t+=1
+                            sc1t_+=1
                         if p[i]>0.5:
                             pred[yl][idtest[i]]=xtest[i][0]
                             if ytest[i]==1:
                                 sc2t+=1
+                                sc2t_+=1
                         else:
                             pred[yl][idtest[i]]=xtest[i][1]
                             if ytest[i]==0:
                                 sc2t+=1
+                                sc2t_+=1
                         tt += 1
                     #np.savetxt('testgbm'+yl+'tr'+str(trees)+'mn'+str(mf)+'.out',np.column_stack((ytest,p)),fmt='%f')
                     ll+=1
@@ -164,11 +171,14 @@ for trees in (300,):
                     sc2=accuracy_score(ytest,np.ones(ytest.shape[0]))
                     ll1+=log_loss(ytest,p)
                     ll1t+=log_loss(ytrain,pt)
+                    ll1_+=log_loss(ytest,p)
+                    ll1t_+=log_loss(ytrain,pt)
                     ll2+=log_loss(ytest,np.repeat(np.mean(ytrain),ytest.shape[0]))
                     tot += sc1-sc2
                 #sys.exit(0)
+                print '%d %d %f %f' % (sc1t_,sc2t_,ll1_,ll1t_)
             print 't%d mf%d mn%d %f LR %f last %d pred %d tot %d ll %f %f ym %f' % (trees,mf,mn,LR,tot,sc1t,sc2t,tt,ll1/ll/7,ll1t/ll/7,ll2/ll/7)
             ri.to_csv('ri.csv')
             #np.savetxt('testp.out',all_pred,fmt='%f')
-            #cPickle.dump(pred,open('pred.pkl','wb'))
+            cPickle.dump(pred,open('pred.pkl','wb'))
             #np.savetxt('testy.ouy',all_y,fmt='%f')
