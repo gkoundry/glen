@@ -23,6 +23,8 @@ from TreeBoost import TreeBoost
 
 # costlvl
 #t300 mf4 mn30 0.050000 LR 0.015575 last 699623 pred 700282 tot 761218 ll 0.248562 0.232272 ym 0.275139
+# no G
+#t300 mf4 mn30 0.050000 LR 0.014140 last 699623 pred 700233 tot 761218 ll 0.248615 0.233044 ym 0.275139
 
 MAD = make_scorer(mean_absolute_error, greater_is_better=False)
 def log_loss(act,pred):
