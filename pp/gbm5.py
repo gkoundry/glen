@@ -82,6 +82,7 @@ for trees in (300,):
                 X=pandas.read_csv('train5'+yl+'.csv')
                 y=X.pop('y')
                 id=X.pop('id')
+                ca=X.pop('ca')
                 cols=X.columns
                 test=[[],[],[]]
                 train=[[],[],[]]
@@ -153,11 +154,14 @@ for trees in (300,):
                             if ytest[i]==0:
                                 sc2t+=1
                         tt += 1
-                    np.savetxt('testgbm'+yl+'tr'+str(trees)+'mn'+str(mf)+'.out',np.column_stack((ytest,p)),fmt='%f')
+                    #np.savetxt('testgbm'+yl+'tr'+str(trees)+'mn'+str(mf)+'.out',np.column_stack((ytest,p)),fmt='%f')
                     ll+=1
                     sc1=accuracy_score(ytest,p)
                     sc2=accuracy_score(ytest,np.ones(ytest.shape[0]))
                     ll1+=log_loss(ytest,p)
+                    print yl+str(ll)+' '+str(log_loss(ytest,p))
+                    ri.to_csv('ri.csv')
+                    sys.exit(0)
                     ll1t+=log_loss(ytrain,pt)
                     ll2+=log_loss(ytest,np.repeat(np.mean(ytrain),ytest.shape[0]))
                     tot += sc1-sc2
