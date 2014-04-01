@@ -58,7 +58,8 @@ def dump(t,n,l):
         dump(t,t.tree_.children_right[n],l+1)
 
 LR=0.05
-for trees in (175,):
+for trees in (300,):
+#for trees in (175,):
     for mf in (4,):
     #for mf in (1,2,4,8,16):
         #for mn in (1,5,15,40,):
@@ -76,6 +77,7 @@ for trees in (175,):
             pred={}
             ri = None
             for yl in ('A','B','C','D','E','F','G'):
+                print yl
                 pred[yl] = {}
                 X=pandas.read_csv('train5'+yl+'.csv')
                 y=X.pop('y')
@@ -134,9 +136,10 @@ for trees in (175,):
                     #sys.exit(0)
                     p=m.predict(np.ascontiguousarray(xtest).astype(float))
                     pt=m.predict(np.ascontiguousarray(xtrain).astype(float))
+                    xx=m.get_importance(False,xtest,ytest)
                     #ri[yl+str(ll)]=m.get_relative_influence()
-                    ri[yl+str(ll)]=m.get_importance(True)
-                    sys.exit(0)
+                    ri[yl+str(ll)]=xx
+                    #ri[yl+str(ll)]=m.get_importance(True)
                     #p=np.ones(p.shape[0])
                     for i in range(xtest.shape[0]):
                         if ytest[i]==1:
@@ -158,6 +161,7 @@ for trees in (175,):
                     ll1t+=log_loss(ytrain,pt)
                     ll2+=log_loss(ytest,np.repeat(np.mean(ytrain),ytest.shape[0]))
                     tot += sc1-sc2
+                #sys.exit(0)
             print 't%d mf%d mn%d %f LR %f last %d pred %d tot %d ll %f %f ym %f' % (trees,mf,mn,LR,tot,sc1t,sc2t,tt,ll1/ll/7,ll1t/ll/7,ll2/ll/7)
             ri.to_csv('ri.csv')
             #np.savetxt('testp.out',all_pred,fmt='%f')
