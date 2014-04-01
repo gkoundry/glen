@@ -18,6 +18,7 @@ costw = {}
 chist = defaultdict(list)
 costdir={}
 avg_co = {}
+costlvl = {}
 risk = {}
 ca={}
 ho={}
@@ -44,6 +45,8 @@ for l in f:
         costdir[id] = {}
     if rt=='1':
         ans[id]={}
+        lastg[id]=lasta[ord('G')-48]
+        costlvl[id] = sum(chist['A'])*1.0/len(chist['A'])
     else:
         quotes[id] += 1
         risk[id] = a[11]
@@ -55,7 +58,6 @@ for l in f:
         levels[col].add(val)
         if rt=='1':
             last_val = lasta[ord(col)-48]
-            lastg[id]=lasta[ord('G')-48]
             last[id][col] = last_val
             while hist[col][-1]==last_val:
                 hist[col].pop()
@@ -101,7 +103,8 @@ for col in ('A','B','C','D','E','F','G'):
     for i in avg_co[col].keys():
         avg_co[col][i] = mean(avg_co[col][i])
     f=open('train5'+col+'.csv','w')
-    f.write("id,y,ls,mf,agemf,prls,prmf,frls,frmf,quotes,nfrls,nfrmf,frrt,prrt,csls,csmf,risk0,risk1,risk2,risk3,risk4,csdir,G1,G2,G3,G4,ca,ho\n")
+    f.write("id,y,ls,mf,agemf,prls,prmf,frls,frmf,quotes,nfrls,nfrmf,frrt,prrt,csls,csmf,risk0,risk1,risk2,risk3,risk4,csdir,ca,ho,costlvl\n")
+    #,G1,G2,G3,G4
     for id in ans.keys():
         ls = last[id][col]
         #mf = mfreq[id][col]
@@ -112,9 +115,11 @@ for col in ('A','B','C','D','E','F','G'):
         f.write("%s,%d,%s,%s" % (id,ls==ans[id][col],ls,mf))
         f.write(",%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f" % (age[id][col][mf],prior[col][ls],prior[col][mf],freq[id][col][ls],freq[id][col][mf],quotes[id],freq[id][col][ls]*1.0/quotes[id],freq[id][col][mf]*1.0/quotes[id],(freq[id][col][mf]+10.0)/(freq[id][col][ls]+10.0),(prior[col][mf]+10.0)/(prior[col][ls]+10.0),avg_co[col][ls],avg_co[col][mf]))
         f.write(",%s,%s,%s,%s,%s" % rd[risk[id]])
-        f.write(',%f,%d,%d,%d,%d' % (costdir[id][col],int(lastg[id]=='1'),int(lastg[id]=='2'),int(lastg[id]=='3'),int(lastg[id]=='4')))
+        f.write(',%f' % (costdir[id][col],))
+        #f.write(',%d,%d,%d,%d' % (int(lastg[id]=='1'),int(lastg[id]=='2'),int(lastg[id]=='3'),int(lastg[id]=='4')))
         f.write(',%s' % ca[id])
         f.write(',%s' % ho[id])
+        f.write(',%s' % costlvl[id])
         f.write('\n')
     f.close()
 

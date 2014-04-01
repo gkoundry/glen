@@ -14,11 +14,15 @@ from TreeBoost import TreeBoost
 #t175 mf4 mn1 0.011839 last 699623 pred 700123 tot 761218 ll 0.249187 0.238983 ym 0.275139
 #t200 mf4 mn1 0.011778 last 699623 pred 700130 tot 761218 ll 0.249189 0.237948 ym 0.275139
 #t300 mf4 mn1 0.009808 last 699623 pred 700063 tot 761218 ll 0.249424 0.234428 ym 0.275139
+#t300 mf4 mn30 0.013745 las 699623 pred 700197 tot 761218 ll 0.249161 0.235933 ym 0.275139
 #a
 #t400 mf3 mn1 0.010816 last 699623 pred 700086 tot 761218 ll 0.314307 0.309529 ym 0.275139
 #t250 mf4 mn1 0.012872 last 699623 pred 700162 tot 761218 ll 0.312688 0.306284 ym 0.27513
 #t350 mf4 mn1 0.013684 last 699623 pred 700197 tot 761218 ll 0.310938 0.302757 ym 0.275139
 #t200 mf5 mn1 0.013268 last 699623 pred 700178 tot 761218 ll 0.310191 0.300842 ym 0.275139
+
+# costlvl
+#t300 mf4 mn30 0.050000 LR 0.015575 last 699623 pred 700282 tot 761218 ll 0.248562 0.232272 ym 0.275139
 
 MAD = make_scorer(mean_absolute_error, greater_is_better=False)
 def log_loss(act,pred):
@@ -82,7 +86,7 @@ for trees in (300,):
                 X=pandas.read_csv('train5'+yl+'.csv')
                 y=X.pop('y')
                 id=X.pop('id')
-                ca=X.pop('ca')
+                #ca=X.pop('ca')
                 cols=X.columns
                 test=[[],[],[]]
                 train=[[],[],[]]
@@ -137,7 +141,7 @@ for trees in (300,):
                     #sys.exit(0)
                     p=m.predict(np.ascontiguousarray(xtest).astype(float))
                     pt=m.predict(np.ascontiguousarray(xtrain).astype(float))
-                    xx=m.get_importance(False,xtest,ytest)
+                    xx=m.get_importance(False,np.ascontiguousarray(xtest).astype(float),ytest.astype(float))
                     #ri[yl+str(ll)]=m.get_relative_influence()
                     ri[yl+str(ll)]=xx
                     #ri[yl+str(ll)]=m.get_importance(True)
@@ -159,9 +163,6 @@ for trees in (300,):
                     sc1=accuracy_score(ytest,p)
                     sc2=accuracy_score(ytest,np.ones(ytest.shape[0]))
                     ll1+=log_loss(ytest,p)
-                    print yl+str(ll)+' '+str(log_loss(ytest,p))
-                    ri.to_csv('ri.csv')
-                    sys.exit(0)
                     ll1t+=log_loss(ytrain,pt)
                     ll2+=log_loss(ytest,np.repeat(np.mean(ytrain),ytest.shape[0]))
                     tot += sc1-sc2
