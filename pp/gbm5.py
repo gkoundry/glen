@@ -64,7 +64,7 @@ def dump(t,n,l):
         dump(t,t.tree_.children_right[n],l+1)
 
 LR=0.05
-for trees in (3,):
+for trees in (300,):
 #for trees in (175,):
     for mf in (4,):
     #for mf in (1,2,4,8,16):
@@ -178,7 +178,7 @@ for trees in (3,):
                     ll2+=log_loss(ytest,np.repeat(np.mean(ytrain),ytest.shape[0]))
                     tot += sc1-sc2
                 #sys.exit(0)
-                print '%d %d %f %f' % (sc1t_,sc2t_,ll1_,ll1t_)
+                print '%d %d %f %f' % (sc1t_,sc2t_,ll1_/3,ll1t_/3)
             print 't%d mf%d mn%d %f LR %f last %d pred %d tot %d ll %f %f ym %f' % (trees,mf,mn,LR,tot,sc1t,sc2t,tt,ll1/ll/7,ll1t/ll/7,ll2/ll/7)
             ri.to_csv('ri.csv')
             #np.savetxt('testp.out',all_pred,fmt='%f')

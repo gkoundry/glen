@@ -11,7 +11,7 @@ for l in f:
         count[a[0]]+=1
 
 rnd = {}
-for ll in range(20):
+for ll in range(3):
     random.seed(2134+3*ll)
     f=open('train.csv')
     h=f.readline()

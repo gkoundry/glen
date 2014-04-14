@@ -18,7 +18,7 @@ out=open('trainrs.csv','w')
 
 seen = {}
 so=''
-for lp in range(100):
+for lp in range(10):
     count=defaultdict(int)
     last={}
     f=open('train.csv','r')
