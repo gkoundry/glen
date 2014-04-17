@@ -6,7 +6,7 @@ if len(sys.argv)>1:
     target=sys.argv[1]
     iter=int(sys.argv[2])
 else:
-    target = 'E'
+    target = 'A'
     iter = 0
 
 def mean(l):
@@ -152,7 +152,7 @@ rd = {
 }
 for i in avg_co[target].keys():
     avg_co[target][i] = mean(avg_co[target][i])
-f=open('train6'+target+'.csv','w')
+f=open('train6'+target+str(iter)+'.csv','w')
 f.write("id,wt,rest,y,ls")
 for lvl in sorted(list(levels[target])):
     f.write(',rel_freq_%s' % lvl)
@@ -160,6 +160,8 @@ for lvl in sorted(list(levels[target])):
     f.write(',abs_freq_%s' % lvl)
 for lvl in sorted(list(levels[target])):
     f.write(',lprior_%s' % lvl)
+for lvl in sorted(list(levels[target])):
+    f.write(',pprior_%s' % lvl)
 f.write(",ls_hist,frls,frmf,quotes,nfrls,nfrmf,frrt,prrt,csls,csmf,risk0,risk1,risk2,risk3,risk4,csdir,ca,ho,dp,cp,cv,cvm,mc,ao,gs,costlvl")
 for col2 in ('A','B','C','D','E','F','G'):
     for lvl in sorted(list(levels[col2])):
@@ -192,6 +194,17 @@ for id in ans.keys():
         for col2 in ('A','B','C','D','E','F','G'):
             if col2!=target:
                 pl.append(last[id][col2])
+            else:
+                pl.append(lvl)
+        pll.append(tprior[''.join(pl)]+10.0)
+    for i in range(len(levels[target])):
+        f.write(',%f' % (pll[i]/sum(pll)))
+    pll = []
+    for lvl in sorted(list(levels[target])):
+        pl = []
+        for col2 in ('A','B','C','D','E','F','G'):
+            if col2!=target:
+                pl.append(plast[id][col2])
             else:
                 pl.append(lvl)
         pll.append(tprior[''.join(pl)]+10.0)

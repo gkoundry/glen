@@ -14,9 +14,13 @@ from rpy2.robjects.packages import importr
 rgbm = importr("gbm")
 
 
-iter = 4
+if len(sys.argv)>1:
+    COLS=[sys.argv[1],]
+    iter=int(sys.argv[2])
+else:
+    COLS = ['A','B','C','G']
+    iter = 0
 #COLS = ['G']
-COLS = ['A','B','C','G']
 #COLS = ['A','B','C','D','E','F','G']
 LEVELS={
     'A': ('0','1','2'),
@@ -73,7 +77,7 @@ for COL in COLS:
             m={}
             ttr = 0
             save = {}
-            for tr in (200,):
+            for tr in (400,):
                 ttr += tr
                 pp = None
                 cvpp = []

@@ -2,7 +2,10 @@ import cPickle
 import sys
 from collections import defaultdict
 
-iter='4'
+if len(sys.argv)>1:
+    iter=sys.argv[1]
+else:
+    iter = '0'
 pred={}
 pred['A']=cPickle.load(open('predA'+iter+'.out','rb'))
 pred['B']=cPickle.load(open('predB'+iter+'.out','rb'))
@@ -105,7 +108,7 @@ for l in f:
                     anoef1+=1
             else:
                 if pl==a[17:24]:
-                    print '%d %-12s %s %s %s' % (p==a[17:24],id,a[17:24],pl,p)
+                    #print '%d %-12s %s %s %s' % (p==a[17:24],id,a[17:24],pl,p)
                     abrk+=1
                 else:
                     anoef2+=1
@@ -157,3 +160,5 @@ print '%d %d %d %d %d' % (ap,al,an,al1,al2)
 print al3
 print 'brk %d fix %d nth %d' % (brk,fix,nth)
 print 'afix %d anoef1 %d abrk %d anoef2 %d' % (afix,anoef1,abrk,anoef2)
+print ''
+sys.stdout.flush()
