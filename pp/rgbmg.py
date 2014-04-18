@@ -30,7 +30,7 @@ imp = Imputer(strategy='most_frequent')
 for mf in (7,):
     for mn in (30,):
         ttr = 0
-        for tr in (200,):
+        for tr in (400,):
             scp = 0
             scl = 0
             rsp = 0
