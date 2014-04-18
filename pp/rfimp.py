@@ -13,7 +13,7 @@ from rpy2.robjects.packages import importr
 rgbm = importr("gbm")
 
 LR=0.03
-COL='B'
+COL='E'
 dist='bernoulli'
 #dist='adaboost'
 
@@ -25,6 +25,9 @@ cvp = ([r'[12467]$',r'[35890]$'],[r'[35890]$',r'[12467]$'])
 ls=X.pop('ls')
 csls=X.pop('csls')
 y=X.pop('y')
+X['y'] = np.logical_and(y.values!=ls.values,rest.values==1).astype(int)
+X.to_csv('rfimp'+COL+'.csv')
+sys.exit(0)
 
 imp = Imputer(strategy='most_frequent')
 for mf in (7,):

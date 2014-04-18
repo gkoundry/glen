@@ -13,8 +13,8 @@ from rpy2.robjects.packages import importr
 rgbm = importr("gbm")
 
 LR=0.03
-COL='B'
-dist='bernoulli'
+COL='E'
+dist='gaussian'
 #dist='adaboost'
 
 X=pandas.read_csv("train6%s.csv" % (COL,))
@@ -44,7 +44,7 @@ for mf in (7,):
                 xtrain = imp.fit_transform(xtrain)
                 xtest = X.values[test]
                 xtest = imp.transform(xtest)
-                ytrain = y.values[train]
+                ytrain = (y.values[train]*2-1)*(1+5*rest.values[train])
                 print str(sum(ytrain.tolist()))+'/'+str(xtrain.shape)
                 ytest = y.values[test]
                 rtest = rest.values[test]
@@ -59,7 +59,7 @@ for mf in (7,):
                         scl += 1
                         if rtest[i]==1:
                             rsl += 1
-                    if int(pp[i]>0.5)==a:
+                    if int(pp[i]>0.0)==a:
                         scp += 1
                         if rtest[i]==1:
                             rsp += 1

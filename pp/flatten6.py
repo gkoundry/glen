@@ -6,7 +6,7 @@ if len(sys.argv)>1:
     target=sys.argv[1]
     iter=int(sys.argv[2])
 else:
-    target = 'E'
+    target = 'B'
     iter = 0
 
 def mean(l):
@@ -37,6 +37,7 @@ cv={}
 cvm={}
 gs={}
 ao={}
+ad={}
 wt={}
 for col in ('A','B','C','D','E','F','G'):
     prior[col] = defaultdict(int)
@@ -104,6 +105,7 @@ for l in f:
             cp[id]=a[15]
             mc[id]=a[14]
             ao[id]=a[12]
+            ad[id]=int(a[12])-int(a[13])
             if a[10]=='':
                 cv[id]=0
                 cvm[id]=1
@@ -160,7 +162,7 @@ for lvl in sorted(list(levels[target])):
     f.write(',abs_freq_%s' % lvl)
 for lvl in sorted(list(levels[target])):
     f.write(',lprior_%s' % lvl)
-f.write(",ls_hist,frls,frmf,quotes,nfrls,nfrmf,frrt,prrt,csls,csmf,risk0,risk1,risk2,risk3,risk4,csdir,ca,ho,dp,cp,cv,cvm,mc,ao,gs,costlvl")
+f.write(",ls_hist,frls,frmf,quotes,nfrls,nfrmf,frrt,prrt,csls,csmf,risk0,risk1,risk2,risk3,risk4,csdir,ca,ho,dp,cp,cv,cvm,mc,ao,ad,gs,costlvl")
 for col2 in ('A','B','C','D','E','F','G'):
     for lvl in sorted(list(levels[col2])):
         f.write(','+col2+lvl)
@@ -208,6 +210,7 @@ for id in ans.keys():
     f.write(',%s' % cvm[id])
     f.write(',%s' % mc[id])
     f.write(',%s' % ao[id])
+    f.write(',%d' % ad[id])
     f.write(',%s' % gs[id])
     f.write(',%s' % costlvl[id])
     for col2 in ('A','B','C','D','E','F','G'):
