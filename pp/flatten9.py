@@ -22,6 +22,7 @@ ans = {}
 ca = {}
 costlvl = {}
 costdir = {}
+freq={}
 gs={}
 ho={}
 ca={}
@@ -63,12 +64,22 @@ for l in f:
         tcost += cs
         ccost += 1
         costlvl[id] = tcost / ccost
+        if id not in freq:
+            freq[id] = {}
+            for col in ('A','B','C','D','E','F','G'):
+                freq[id][col] = defaultdict(int)
+        for col in ('A','B','C','D','E','F','G'):
+            freq[id][col][a[ord(col)-48]] += 1
 
 f=open('train9'+target1+target2+'.csv','w')
 f.write('id,y,ls,ans,last,rest')
 for col in ('A','B','C','D','E','F','G'):
     for lvl in sorted(list(levels[col])):
         f.write(',last'+col+lvl)
+for lvl in sorted(list(levels[target1])):
+    f.write(',freq'+target1+lvl)
+for lvl in sorted(list(levels[target2])):
+    f.write(',freq'+target2+lvl)
 f.write(',gs')
 f.write(',ho')
 f.write(',ca')
@@ -90,6 +101,10 @@ for id in ans.keys():
     for col in ('A','B','C','D','E','F','G'):
         for lvl in sorted(list(levels[col])):
             f.write(',%d' % int(last[id][tval(col)]==lvl))
+    for lvl in sorted(list(levels[target1])):
+        f.write(',%d' % freq[id][target1][lvl])
+    for lvl in sorted(list(levels[target2])):
+        f.write(',%d' % freq[id][target2][lvl])
     f.write(',%s' % gs[id])
     f.write(',%s' % ho[id])
     f.write(',%s' % ca[id])
