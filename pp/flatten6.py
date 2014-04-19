@@ -44,7 +44,7 @@ for col in ('A','B','C','D','E','F','G'):
     costw[col] = defaultdict(list)
     avg_co[col] = defaultdict(list)
 
-f=open('train.csv','r')
+f=open('trains1.csv','r')
 #f=open('trains3.csv','r')
 h=f.readline()
 for l in f:

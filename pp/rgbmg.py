@@ -30,7 +30,7 @@ imp = Imputer(strategy='most_frequent')
 for mf in (7,):
     for mn in (30,):
         ttr = 0
-        for tr in (400,):
+        for tr in (100,):
             scp = 0
             scl = 0
             rsp = 0
@@ -54,7 +54,7 @@ for mf in (7,):
                 pp = np.array(rgbm.predict_gbm(m,xtest,n_trees=tr,type="response"))
                 print pp.shape
                 for i,a in enumerate(ytest):
-                    print str(idtest[i])+' '+str(pp[i])
+                   # print str(idtest[i])+' '+str(pp[i])
                     if lstest[i]==a:
                         scl += 1
                         if rtest[i]==1:
