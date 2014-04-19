@@ -6,7 +6,7 @@ if len(sys.argv)>1:
     target=sys.argv[1]
     iter=int(sys.argv[2])
 else:
-    target1 = 'C'
+    target1 = 'G'
     target2 = 'G'
     iter = 0
 
@@ -20,6 +20,8 @@ levels = { 'A':set(),'B':set(),'C':set(),'D':set(),'E':set(),'F':set(),'G':set()
 last = {}
 ans = {}
 ca = {}
+costlvl = {}
+costdir = {}
 gs={}
 ho={}
 ca={}
@@ -28,6 +30,9 @@ cp={}
 mc={}
 ao={}
 ad={}
+tcost=0
+ccost=0
+quotes = defaultdict(int)
 f=open('trains1.csv','r')
 h=f.readline()
 for l in f:
@@ -40,6 +45,8 @@ for l in f:
         for col in ('A','B','C','D','E','F','G'):
             val = a[ord(col)-48]
             levels[col].add(val)
+        tcost = 0
+        ccost = 0
     else:
         last[id] = a[17:24]
         gs[id]=a[7]
@@ -50,6 +57,12 @@ for l in f:
         mc[id]=a[14]
         ao[id]=a[12]
         ad[id]=int(a[12])-int(a[13])
+        quotes[id] += 1
+        if tcost > 0:
+            costdir[id] = cs / (tcost/ccost)
+        tcost += cs
+        ccost += 1
+        costlvl[id] = tcost / ccost
 
 f=open('train9'+target1+target2+'.csv','w')
 f.write('id,y,ls,ans,last,rest')
@@ -64,6 +77,9 @@ f.write(',cp')
 f.write(',mc')
 f.write(',ao')
 f.write(',ad')
+f.write(',costlvl')
+f.write(',costdir')
+f.write(',quotes')
 f.write('\n')
 for id in ans.keys():
     rest = 1
@@ -82,4 +98,7 @@ for id in ans.keys():
     f.write(',%s' % mc[id])
     f.write(',%s' % ao[id])
     f.write(',%s' % ad[id])
+    f.write(',%f' % costlvl[id])
+    f.write(',%f' % costdir[id])
+    f.write(',%d' % quotes[id])
     f.write('\n')
