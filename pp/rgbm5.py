@@ -16,9 +16,9 @@ y = X.pop('y')
 
 dist = 'bernoulli'
 LR =0.02
-for tr in (10,100,200,300,400,):
-    for mf in (5,8,):
-        for mn in (3,25):
+for tr in (300,):
+    for mf in (8,):
+        for mn in (25,):
             kf = KFold(X.shape[0], 3, shuffle=True, random_state=1234)
             scl = 0
             scp = 0
@@ -40,7 +40,6 @@ for tr in (10,100,200,300,400,):
                         scl += 1
                     sl = '%07d' % ltest[i]
                     sa = '%07d' % atest[i]
-                    #print sa +' '+sl+' '+str(p[i])+' '+str(y[i])+' '+sl[4]
                     if sa==sl[0:4]+str(int(p[i]>0.5))+sl[5:]:
                         scp += 1
                     if int(p[i]>0.5)==int(sa[4]):
@@ -48,6 +47,7 @@ for tr in (10,100,200,300,400,):
                     if sl[4]==sa[4]:
                         ecl += 1
                     if int(sl[4])!=int(p[i]>0.5):
+                        print sa +' '+sl+' '+str(p[i])+' '+str(ytest[i])+' '+sl[4]+' '+str(sa==sl[0:4]+str(int(p[i]>0.5))+sl[5:])+' '+str(sa[0:4]+sa[5:]==sl[0:4]+sl[5:])
                         diff += 1
                     tot += 1
             print 'tr%d mf%d mn%d %d %d %d %d %d diff %d' % (tr,mf,mn,ecp,ecl,scp,scl,tot,diff)
