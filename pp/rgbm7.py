@@ -14,8 +14,12 @@ from rpy2.robjects.packages import importr
 rgbm = importr("gbm")
 
 LR=0.03
-COL1='G'
-COL2='G'
+if len(sys.argv)>1:
+    COL1=sys.argv[1]
+    COL2=sys.argv[2]
+else:
+    COL1='A'
+    COL2='D'
 LEVELS={
     'A': ('0','1','2'),
     'B': ('0','1'),
@@ -35,13 +39,13 @@ last=X.pop('last')
 ans=X.pop('ans')
 
 imp = Imputer(strategy='most_frequent')
-for mf in (3,7,):
-#for mf in (7,):
-    for mn in (1,20,100,):
-    #for mn in (10,):
+#for mf in (3,7,):
+for mf in (5,):
+    #for mn in (1,20,100,):
+    for mn in (5,):
         ttr = 0
-        for tr in (5,100,200,400,):
-        #for tr in (2,):
+        #for tr in (5,100,200,400,):
+        for tr in (100,):
             scp = 0
             scl = 0
             rsp = 0

@@ -3,12 +3,11 @@ import cPickle
 from collections import defaultdict
 
 if len(sys.argv)>1:
-    target=sys.argv[1]
-    iter=int(sys.argv[2])
+    target1=sys.argv[1]
+    target2=sys.argv[2]
 else:
-    target1 = 'G'
-    target2 = 'G'
-    iter = 0
+    target1 = 'A'
+    target2 = 'D'
 
 def mean(l):
     return sum(l)*1.0/len(l)
