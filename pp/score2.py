@@ -1,3 +1,5 @@
+import sys
+cols = ('A','B','C','D','E','F','G')
 pred = {}
 pred['G']={}
 for col in ('A','B','C','D','E','F'):
@@ -22,15 +24,23 @@ for l in f:
         c=1
         cl=1
         id=int(a[0])
+        #sys.stdout.write('%d ' % id)
         for col in ('A','B','C','D','E','F','G'):
-            if col=='G':
-                p=pred[col][id][0]
+            if col in cols:
+                if col=='G':
+                    p=pred[col][id][ord('E')-65]
+                else:
+                    p=pred[col][id]
+         #           if int(p)!= int(lasta[ord(col)-48]):
+         #               print id
             else:
-                p=pred[col][id]
+                p = lasta[ord(col)-48]
             if a[ord(col)-48] != p:
                 c=0
             if a[ord(col)-48] != lasta[ord(col)-48]:
                 cl=0
+            #sys.stdout.write(p)
+        #sys.stdout.write(" %d\n" % c)
         if c==1:
             scp+=1
         if cl==1:
