@@ -31,12 +31,12 @@ y=X.pop('ans')
 
 imp = Imputer(strategy='most_frequent')
 #for mf in (3,7,):
-for mf in (3,):
+for mf in (5,):
     #for mn in (1,20,100,):
     for mn in (5,):
         ttr = 0
         #for tr in (5,100,200,400,):
-        for tr in (3,):
+        for tr in (100,):
             scp = 0
             scl = 0
             rsp = 0

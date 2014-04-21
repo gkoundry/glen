@@ -18,8 +18,8 @@ if len(sys.argv)>1:
     COL1=sys.argv[1]
     COL2=sys.argv[2]
 else:
-    COL1='A'
-    COL2='D'
+    COL1='F'
+    COL2='G'
 LEVELS={
     'A': ('0','1','2'),
     'B': ('0','1'),
@@ -38,6 +38,7 @@ y=X.pop('y')
 last=X.pop('last')
 ans=X.pop('ans')
 
+fo=open('pred'+COL1+COL2+'.csv','w')
 imp = Imputer(strategy='most_frequent')
 #for mf in (3,7,):
 for mf in (5,):
@@ -76,6 +77,7 @@ for mf in (5,):
                         scl += 1
                         if rtest[i]==1:
                             rsl += 1
+                    fo.write("%07d,%02d\n" % (idtest[i],levels[pred[i]]))
                     if int(levels[pred[i]])==int(a):
                         scp += 1
                         if rtest[i]==1:
