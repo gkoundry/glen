@@ -6,8 +6,8 @@ if len(sys.argv)>1:
     target1=sys.argv[1]
     target2=sys.argv[2]
 else:
-    target1 = 'A'
-    target2 = 'D'
+    target1 = 'E'
+    target2 = 'G'
 
 def mean(l):
     return sum(l)*1.0/len(l)
@@ -30,6 +30,12 @@ cp={}
 mc={}
 ao={}
 ad={}
+state={}
+prior={}
+lcost={}
+states = set()
+for col in ('A','B','C','D','E','F','G'):
+    prior[col]=defaultdict(int)
 tcost=0
 ccost=0
 quotes = defaultdict(int)
@@ -39,6 +45,7 @@ for l in f:
     a=l.rstrip().split(',')
     id=a[0]
     rt=a[2]
+
     cs=float(a[24])
     if rt=='1':
         ans[id] = a[17:24]
@@ -56,6 +63,8 @@ for l in f:
         cp[id]=a[15]
         mc[id]=a[14]
         ao[id]=a[12]
+        states.add(a[5])
+        state[id]=a[5]
         ad[id]=int(a[12])-int(a[13])
         quotes[id] += 1
         if tcost > 0:
@@ -65,10 +74,14 @@ for l in f:
         costlvl[id] = tcost / ccost
         if id not in freq:
             freq[id] = {}
+            lcost[id] = {}
             for col in ('A','B','C','D','E','F','G'):
                 freq[id][col] = defaultdict(int)
+                lcost[id][col]=defaultdict(int)
         for col in ('A','B','C','D','E','F','G'):
             freq[id][col][a[ord(col)-48]] += 1
+            lcost[id][col][a[ord(col)-48]] += cs
+            prior[col][a[ord(col)-48]] += 1
 
 f=open('train9'+target1+target2+'.csv','w')
 f.write('id,y,ls,ans,last,rest')
@@ -78,7 +91,7 @@ for col in ('A','B','C','D','E','F','G'):
 for lvl in sorted(list(levels[target1])):
     f.write(',freq'+target1+lvl)
 for lvl in sorted(list(levels[target2])):
-    f.write(',freq'+target2+lvl)
+    f.write(',freq2'+target2+lvl)
 f.write(',gs')
 f.write(',ho')
 f.write(',ca')
@@ -90,6 +103,10 @@ f.write(',ad')
 f.write(',costlvl')
 f.write(',costdir')
 f.write(',quotes')
+for st in sorted(list(states)):
+    f.write(',%s' % st)
+#f.write(',csrt1')
+#f.write(',csrt2')
 f.write('\n')
 for id in ans.keys():
     rest = 1
@@ -115,4 +132,38 @@ for id in ans.keys():
     f.write(',%f' % costlvl[id])
     f.write(',%f' % costdir[id])
     f.write(',%d' % quotes[id])
+    for st in sorted(list(states)):
+        f.write(',%d' % int(state[id]==st))
+#    c1 = 0
+#    c2 = 0
+#    t1 = 0
+#    t2 = 0
+#    for k,v in lcost[id][target1].items():
+#        if k==last[id][tval(target1)]:
+#            c1 += v
+#            t1 += 1
+#            t1 += freq[id][target1][k]
+#        else:
+#            c2 += v
+#            t2 += 1
+#            t2 += freq[id][target1][k]
+#    if c2==0:
+#        c2=c1
+#        t2=t1
+#    f.write(',%f' % ((c1*1.0/t1)/(c2*1.0/t2)))
+#    c1 = 0
+#    c2 = 0
+#    t1 = 0
+#    t2 = 0
+#    for k,v in lcost[id][target2].items():
+#        if k==last[id][tval(target2)]:
+#            c1 += v
+#            t1 += freq[id][target2][k]
+#        else:
+#            c2 += v
+#            t2 += freq[id][target2][k]
+#    if c2==0:
+#        c2=c1
+#        t2=t1
+#    f.write(',%f' % ((c1*1.0/t1)/(c2*1.0/t2),))
     f.write('\n')

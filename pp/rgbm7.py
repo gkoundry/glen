@@ -18,7 +18,7 @@ if len(sys.argv)>1:
     COL1=sys.argv[1]
     COL2=sys.argv[2]
 else:
-    COL1='F'
+    COL1='E'
     COL2='G'
 LEVELS={
     'A': ('0','1','2'),
@@ -46,7 +46,7 @@ for mf in (5,):
     for mn in (5,):
         ttr = 0
         #for tr in (5,100,200,400,):
-        for tr in (100,):
+        for tr in (200,):
             scp = 0
             scl = 0
             rsp = 0
@@ -78,6 +78,14 @@ for mf in (5,):
                         if rtest[i]==1:
                             rsl += 1
                     fo.write("%07d,%02d\n" % (idtest[i],levels[pred[i]]))
+                    aa = '%07d' % anstest[i]
+                    ab = '%07d' % lasttest[i]
+                    p1 = '%02d' % int(levels[pred[i]])
+                    ab=list(ab)
+                    ab[ord(COL1)-65] = p1[0]
+                    ab[ord(COL2)-65] = p1[1]
+                    ab=''.join(ab)
+                    #print '%s %s %s %d' % ( idtest[i],aa,ab, int(int(levels[pred[i]])==int(a) and rtest[i]==1))
                     if int(levels[pred[i]])==int(a):
                         scp += 1
                         if rtest[i]==1:
