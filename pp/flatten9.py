@@ -4,10 +4,8 @@ from collections import defaultdict
 
 if len(sys.argv)>1:
     target1=sys.argv[1]
-    target2=sys.argv[2]
 else:
     target1 = 'E'
-    target2 = 'G'
 
 def mean(l):
     return sum(l)*1.0/len(l)
@@ -83,15 +81,13 @@ for l in f:
             lcost[id][col][a[ord(col)-48]] += cs
             prior[col][a[ord(col)-48]] += 1
 
-f=open('train9'+target1+target2+'.csv','w')
+f=open('train9'+target1+'.csv','w')
 f.write('id,y,ls,ans,last,rest')
 for col in ('A','B','C','D','E','F','G'):
     for lvl in sorted(list(levels[col])):
         f.write(',last'+col+lvl)
 for lvl in sorted(list(levels[target1])):
     f.write(',freq'+target1+lvl)
-for lvl in sorted(list(levels[target2])):
-    f.write(',freq2'+target2+lvl)
 f.write(',gs')
 f.write(',ho')
 f.write(',ca')
@@ -111,16 +107,14 @@ f.write('\n')
 for id in ans.keys():
     rest = 1
     for col in ('A','B','C','D','E','F','G'):
-        if col!=target1 and col!=target2 and ans[id][tval(col)]!=last[id][tval(col)]:
+        if col!=target1 and ans[id][tval(col)]!=last[id][tval(col)]:
             rest = 0
-    f.write('%s,%s,%s,%s,%s,%d' % (id,ans[id][tval(target1)]+ans[id][tval(target2)],last[id][tval(target1)]+last[id][tval(target2)],''.join(ans[id]),''.join(last[id]),rest))
+    f.write('%s,%s,%s,%s,%s,%d' % (id,ans[id][tval(target1)],last[id][tval(target1)],''.join(ans[id]),''.join(last[id]),rest))
     for col in ('A','B','C','D','E','F','G'):
         for lvl in sorted(list(levels[col])):
             f.write(',%d' % int(last[id][tval(col)]==lvl))
     for lvl in sorted(list(levels[target1])):
         f.write(',%d' % freq[id][target1][lvl])
-    for lvl in sorted(list(levels[target2])):
-        f.write(',%d' % freq[id][target2][lvl])
     f.write(',%s' % gs[id])
     f.write(',%s' % ho[id])
     f.write(',%s' % ca[id])
