@@ -5,12 +5,17 @@ from collections import defaultdict
 if len(sys.argv)>1:
     target1=sys.argv[1]
 else:
-    target1 = 'E'
+    target1 = 'G'
 
 def mean(l):
     return sum(l)*1.0/len(l)
 def tval(c):
     return ord(c)-65
+def carval(v):
+    if v=='':
+        return (0,1)
+    else:
+        return (ord(v)-ord('a')+1,0)
 
 levels = { 'A':set(),'B':set(),'C':set(),'D':set(),'E':set(),'F':set(),'G':set() }
 
@@ -28,6 +33,8 @@ cp={}
 mc={}
 ao={}
 ad={}
+cv={}
+cvm={}
 state={}
 prior={}
 lcost={}
@@ -36,6 +43,8 @@ for col in ('A','B','C','D','E','F','G'):
     prior[col]=defaultdict(int)
 tcost=0
 ccost=0
+day={}
+hour={}
 quotes = defaultdict(int)
 f=open('trains1.csv','r')
 h=f.readline()
@@ -61,6 +70,9 @@ for l in f:
         cp[id]=a[15]
         mc[id]=a[14]
         ao[id]=a[12]
+        cv[id],cvm[id] = carval(a[10])
+        day[id]=a[3]
+        hour[id]=a[4].split(':')[0]
         states.add(a[5])
         state[id]=a[5]
         ad[id]=int(a[12])-int(a[13])
@@ -99,6 +111,11 @@ f.write(',ad')
 f.write(',costlvl')
 f.write(',costdir')
 f.write(',quotes')
+f.write(',day5')
+f.write(',day6')
+f.write(',hour')
+f.write(',cv')
+f.write(',cvm')
 for st in sorted(list(states)):
     f.write(',%s' % st)
 #f.write(',csrt1')
@@ -126,6 +143,11 @@ for id in ans.keys():
     f.write(',%f' % costlvl[id])
     f.write(',%f' % costdir[id])
     f.write(',%d' % quotes[id])
+    f.write(',%d' % int(day[id]=='5'))
+    f.write(',%d' % int(day[id]=='6'))
+    f.write(',%s' % hour[id])
+    f.write(',%s' % cv[id])
+    f.write(',%s' % cvm[id])
     for st in sorted(list(states)):
         f.write(',%d' % int(state[id]==st))
 #    c1 = 0
