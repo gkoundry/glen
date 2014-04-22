@@ -5,7 +5,7 @@ from collections import defaultdict
 if len(sys.argv)>1:
     target1=sys.argv[1]
 else:
-    target1 = 'G'
+    target1 = 'B'
 
 def mean(l):
     return sum(l)*1.0/len(l)
@@ -16,6 +16,11 @@ def carval(v):
         return (0,1)
     else:
         return (ord(v)-ord('a')+1,0)
+def rfx(v):
+    if v=='NA':
+        return (0,1)
+    else:
+        return (v,0)
 
 levels = { 'A':set(),'B':set(),'C':set(),'D':set(),'E':set(),'F':set(),'G':set() }
 
@@ -29,12 +34,17 @@ gs={}
 ho={}
 ca={}
 dp={}
-cp={}
 mc={}
 ao={}
 ad={}
 cv={}
 cvm={}
+rf={}
+rfm={}
+cp={}
+cpm={}
+dp={}
+dpm={}
 state={}
 prior={}
 lcost={}
@@ -67,10 +77,12 @@ for l in f:
         ho[id]=a[8]
         ca[id]=a[9]
         dp[id]=a[16]
-        cp[id]=a[15]
         mc[id]=a[14]
         ao[id]=a[12]
         cv[id],cvm[id] = carval(a[10])
+        rf[id],rfm[id] = rfx(a[11])
+        cp[id],cpm[id] = rfx(a[15])
+        dp[id],dpm[id] = rfx(a[16])
         day[id]=a[3]
         hour[id]=a[4].split(':')[0]
         states.add(a[5])
@@ -104,7 +116,6 @@ f.write(',gs')
 f.write(',ho')
 f.write(',ca')
 f.write(',dp')
-f.write(',cp')
 f.write(',mc')
 f.write(',ao')
 f.write(',ad')
@@ -116,6 +127,12 @@ f.write(',day6')
 f.write(',hour')
 f.write(',cv')
 f.write(',cvm')
+f.write(',rf')
+f.write(',rfm')
+f.write(',cp')
+f.write(',cpm')
+f.write(',dp')
+f.write(',dpm')
 for st in sorted(list(states)):
     f.write(',%s' % st)
 #f.write(',csrt1')
@@ -136,7 +153,6 @@ for id in ans.keys():
     f.write(',%s' % ho[id])
     f.write(',%s' % ca[id])
     f.write(',%s' % dp[id])
-    f.write(',%s' % cp[id])
     f.write(',%s' % mc[id])
     f.write(',%s' % ao[id])
     f.write(',%s' % ad[id])
@@ -148,6 +164,12 @@ for id in ans.keys():
     f.write(',%s' % hour[id])
     f.write(',%s' % cv[id])
     f.write(',%s' % cvm[id])
+    f.write(',%s' % rf[id])
+    f.write(',%s' % rfm[id])
+    f.write(',%s' % cp[id])
+    f.write(',%s' % cpm[id])
+    f.write(',%s' % dp[id])
+    f.write(',%s' % dpm[id])
     for st in sorted(list(states)):
         f.write(',%d' % int(state[id]==st))
 #    c1 = 0
