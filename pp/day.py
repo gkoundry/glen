@@ -1,5 +1,6 @@
 from collections import defaultdict
 import sys
+ff=16
 for col in range(17,24):
     f=open('train.csv','r')
     h=f.readline()
@@ -7,9 +8,9 @@ for col in range(17,24):
     levels=set()
     for l in f:
         a=l.rstrip().split(',')
-        if a[3] not in sf:
-            sf[a[3]]=defaultdict(int)
-        sf[a[3]][a[col]]+=1
+        if a[ff] not in sf:
+            sf[a[ff]]=defaultdict(int)
+        sf[a[ff]][a[col]]+=1
         levels.add(a[col])
     ls = sorted(list(levels))
     for s,c in sf.items():
