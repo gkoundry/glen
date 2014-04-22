@@ -6,7 +6,7 @@ if len(sys.argv)>1:
     target=sys.argv[1]
     iter=int(sys.argv[2])
 else:
-    target = 'A'
+    target = 'D'
     iter = 0
 
 def mean(l):

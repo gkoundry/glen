@@ -5,7 +5,7 @@ from collections import defaultdict
 if len(sys.argv)>1:
     target1=sys.argv[1]
 else:
-    target1 = 'B'
+    target1 = 'C'
 
 def mean(l):
     return sum(l)*1.0/len(l)
@@ -42,6 +42,7 @@ cvm={}
 rf={}
 rfm={}
 cp={}
+hist={}
 cpm={}
 dp={}
 dpm={}
@@ -72,7 +73,6 @@ for l in f:
         tcost = 0
         ccost = 0
     else:
-        last[id] = a[17:24]
         gs[id]=a[7]
         ho[id]=a[8]
         ca[id]=a[9]
@@ -97,13 +97,20 @@ for l in f:
         if id not in freq:
             freq[id] = {}
             lcost[id] = {}
+            hist[id] = {}
             for col in ('A','B','C','D','E','F','G'):
                 freq[id][col] = defaultdict(int)
                 lcost[id][col]=defaultdict(int)
+                hist[id][col]=defaultdict(int)
         for col in ('A','B','C','D','E','F','G'):
             freq[id][col][a[ord(col)-48]] += 1
             lcost[id][col][a[ord(col)-48]] += cs
             prior[col][a[ord(col)-48]] += 1
+            if id in last and a[ord(col)-48] == last[id][ord(col)-65]:
+                hist[id][col] += 1
+            else:
+                hist[id][col]=1
+        last[id] = a[17:24]
 
 f=open('train9'+target1+'.csv','w')
 f.write('id,y,ls,ans,last,rest')
@@ -112,6 +119,8 @@ for col in ('A','B','C','D','E','F','G'):
         f.write(',last'+col+lvl)
 for lvl in sorted(list(levels[target1])):
     f.write(',freq'+target1+lvl)
+for col in ('A','B','C','D','E','F','G'):
+    f.write(',hist'+col)
 f.write(',gs')
 f.write(',ho')
 f.write(',ca')
@@ -149,6 +158,8 @@ for id in ans.keys():
             f.write(',%d' % int(last[id][tval(col)]==lvl))
     for lvl in sorted(list(levels[target1])):
         f.write(',%d' % freq[id][target1][lvl])
+    for col in ('A','B','C','D','E','F','G'):
+        f.write(',%d' % hist[id][col])
     f.write(',%s' % gs[id])
     f.write(',%s' % ho[id])
     f.write(',%s' % ca[id])
