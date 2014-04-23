@@ -5,7 +5,7 @@ from collections import defaultdict
 if len(sys.argv)>1:
     target1=sys.argv[1]
 else:
-    target1 = 'C'
+    target1 = 'G'
 
 def mean(l):
     return sum(l)*1.0/len(l)
