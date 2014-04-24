@@ -5,7 +5,7 @@ from collections import defaultdict
 if len(sys.argv)>1:
     target1=sys.argv[1]
 else:
-    target1 = 'G'
+    target1 = 'F'
 
 def mean(l):
     return sum(l)*1.0/len(l)
@@ -21,6 +21,12 @@ def rfx(v):
         return (0,1)
     else:
         return (v,0)
+
+f=open('predG.csv')
+predg={}
+for l in f:
+    id,p=l.rstrip().split(',')
+    predg[int(id)]=float(p)
 
 levels = { 'A':set(),'B':set(),'C':set(),'D':set(),'E':set(),'F':set(),'G':set() }
 
@@ -49,6 +55,7 @@ dpm={}
 state={}
 prior={}
 lcost={}
+uniq={}
 states = set()
 for col in ('A','B','C','D','E','F','G'):
     prior[col]=defaultdict(int)
@@ -98,11 +105,14 @@ for l in f:
             freq[id] = {}
             lcost[id] = {}
             hist[id] = {}
+            uniq[id] = {}
             for col in ('A','B','C','D','E','F','G'):
+                uniq[id][col] = set()
                 freq[id][col] = defaultdict(int)
                 lcost[id][col]=defaultdict(int)
                 hist[id][col]=defaultdict(int)
         for col in ('A','B','C','D','E','F','G'):
+            uniq[id][col].add(a[ord(col)-48])
             freq[id][col][a[ord(col)-48]] += 1
             lcost[id][col][a[ord(col)-48]] += cs
             prior[col][a[ord(col)-48]] += 1
@@ -121,6 +131,8 @@ for lvl in sorted(list(levels[target1])):
     f.write(',freq'+target1+lvl)
 for col in ('A','B','C','D','E','F','G'):
     f.write(',hist'+col)
+for col in ('A','B','C','D','E','F','G'):
+    f.write(',uniq'+col)
 f.write(',gs')
 f.write(',ho')
 f.write(',ca')
@@ -142,6 +154,7 @@ f.write(',cp')
 f.write(',cpm')
 f.write(',dp')
 f.write(',dpm')
+f.write(',predg')
 for st in sorted(list(states)):
     f.write(',%s' % st)
 #f.write(',csrt1')
@@ -160,6 +173,8 @@ for id in ans.keys():
         f.write(',%d' % freq[id][target1][lvl])
     for col in ('A','B','C','D','E','F','G'):
         f.write(',%d' % hist[id][col])
+    for col in ('A','B','C','D','E','F','G'):
+        f.write(',%d' % len(uniq[id][col]))
     f.write(',%s' % gs[id])
     f.write(',%s' % ho[id])
     f.write(',%s' % ca[id])
@@ -181,6 +196,7 @@ for id in ans.keys():
     f.write(',%s' % cpm[id])
     f.write(',%s' % dp[id])
     f.write(',%s' % dpm[id])
+    f.write(',%s' % predg[int(id)])
     for st in sorted(list(states)):
         f.write(',%d' % int(state[id]==st))
 #    c1 = 0

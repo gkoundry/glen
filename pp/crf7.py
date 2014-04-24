@@ -11,7 +11,7 @@ LR=0.03
 if len(sys.argv)>1:
     COL1=sys.argv[1]
 else:
-    COL1='G'
+    COL1='F'
 LEVELS={
     'A': ('0','1','2'),
     'B': ('0','1'),

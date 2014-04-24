@@ -17,7 +17,7 @@ LR=0.03
 if len(sys.argv)>1:
     COL1=sys.argv[1]
 else:
-    COL1='D'
+    COL1='F'
 LEVELS={
     'A': ('0','1','2'),
     'B': ('0','1'),
@@ -41,7 +41,7 @@ imp = Imputer(strategy='most_frequent')
 for mf in (7,):
 #for mf in (5,):
     #for mn in (1,20,100,):
-    for mn in (1,):
+    for mn in (10,):
         ttr = 0
         #for tr in (100,200,400,):
         for tr in (200,):
