@@ -38,13 +38,13 @@ ans=X.pop('ans')
 
 fo=open('pred'+COL1+'.csv','w')
 imp = Imputer(strategy='most_frequent')
-for mf in (5,9,):
+for mf in (9,):
 #for mf in (5,):
     #for mn in (1,20,100,):
-    for mn in (1,10,50):
+    for mn in (1,):
         ttr = 0
         #for tr in (100,200,400,):
-        for tr in (100,200,400):
+        for tr in (200,400,600,):
             scp = 0
             scl = 0
             rsp = 0
@@ -63,7 +63,7 @@ for mf in (5,9,):
                 lasttest = last.values[test]
                 anstest = ans.values[test]
                 idtest = rid.values[test].astype(float)
-                m=rgbm.gbm_fit(xtrain,ytrain,nTrain=xtrain.shape[0],bag_fraction=1,n_trees=tr,verbose=False,keep_data=False,n_minobsinnode=mn,distribution='multinomial',interaction_depth=mf,shrinkage=LR) #, w=wtrain[rows]*2.0)
+                m=rgbm.gbm_fit(xtrain,ytrain,nTrain=xtrain.shape[0],var_names=list(X.columns),bag_fraction=1,n_trees=tr,verbose=False,keep_data=False,n_minobsinnode=mn,distribution='multinomial',interaction_depth=mf,shrinkage=LR) #, w=wtrain[rows]*2.0)
                 ppp=rgbm.predict_gbm(m,xtest,n_trees=tr,type="response")
                 pp = np.array(ppp)
                 levels = np.array(ppp.names[1]).astype(int)
