@@ -29,12 +29,6 @@ def tdiff(t1,t2):
         return t2-t1
     return t2+24*60-t1
 
-f=open('predG.csv')
-predg={}
-for l in f:
-    id,p=l.rstrip().split(',')
-    predg[int(id)]=float(p)
-
 levels = { 'A':set(),'B':set(),'C':set(),'D':set(),'E':set(),'F':set(),'G':set() }
 
 last = {}
@@ -184,7 +178,6 @@ f.write(',cp')
 f.write(',cpm')
 f.write(',dp')
 f.write(',dpm')
-#f.write(',predg')
 for st in sorted(list(states)):
     f.write(',%s' % st)
 #f.write(',csrt1')
@@ -231,7 +224,6 @@ for id in ans.keys():
     f.write(',%s' % cpm[id])
     f.write(',%s' % dp[id])
     f.write(',%s' % dpm[id])
-    #f.write(',%s' % predg[int(id)])
     for st in sorted(list(states)):
         f.write(',%d' % int(state[id]==st))
 #    c1 = 0

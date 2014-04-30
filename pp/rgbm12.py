@@ -38,13 +38,13 @@ ans=X.pop('ans')
 
 fo=open('pred'+COL1+'.csv','w')
 imp = Imputer(strategy='most_frequent')
-for mf in (9,):
+for mf in (5,):
 #for mf in (5,):
     #for mn in (1,20,100,):
-    for mn in (1,):
+    for mn in (10,):
         ttr = 0
         #for tr in (100,200,400,):
-        for tr in (200,400,600,):
+        for tr in (700,):
             scp = 0
             scl = 0
             rsp = 0
