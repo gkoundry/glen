@@ -28,22 +28,22 @@ LEVELS={
     'G': ('1','2','3','4'),
 }
 
-X=pandas.read_csv("train12fb.csv")
+X=pandas.read_csv("train12lp.csv")
 rid=X.pop('id').apply(str)
 y=X.pop('y')
 ans=X.pop('ans')
 last=X.pop('last')
 pred=X.pop('pred')
 
-fo=open('pred_fbz.csv','w')
+fo=open('pred_lp.csv','w')
 imp = Imputer(strategy='most_frequent')
 #for mf in (8,11,):
-for mf in (5,):
+for mf in (8,):
     #for mn in (1,5,20,):
-    for mn in (50,):
+    for mn in (100,):
         ttr = 0
         #for tr in (200,400,600):
-        for tr in (400,):
+        for tr in (300,):
             scp = defaultdict(int)
             scl = defaultdict(int)
             rsp = defaultdict(int)
@@ -71,7 +71,7 @@ for mf in (5,):
                 pp=np.array(rgbm.predict_gbm(m,xtest,n_trees=tr))
                 pt=np.array(rgbm.predict_gbm(m,xtrain,n_trees=tr))
                 #for th in (0.0,0.2):
-                for th in (-2.6,-2.3,-2,-1.7,-1.4,-0.7,):
+                for th in (0.2,0.5,0.8,1.1,1.4,1.7,2):
                     for i,a in enumerate(ytrain):
                         if pt[i]>th:
                             if predtrain[i]==anstrain[i]:
@@ -87,9 +87,9 @@ for mf in (5,):
                         #x1 = '%07d' % lasttest[i]
                         #x2 = '%07d' % predtest[i]
                         #if int(x1[:6]+x2[6])==anstest[i]:
-                        #    rsp += 1
+                        #    rsp[th] += 1
                         #if predtest[i]==anstest[i] or lasttest[i]==anstest[i]:
-                        #    rsp += 1
+                        #    rsp[th] += 1
 
                         if pp[i]>th:
                             if predtest[i]==anstest[i]:
