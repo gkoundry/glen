@@ -58,14 +58,12 @@ cpm={}
 dp={}
 dpm={}
 state={}
-prior={}
+prior=defaultdict(int)
 lcost={}
 cost1={}
 cost2={}
 uniq={}
 states = set()
-for col in ('A','B','C','D','E','F','G'):
-    prior[col]=defaultdict(int)
 tcost=0
 ccost=0
 day={}
@@ -83,6 +81,7 @@ for l in f:
     cs=float(a[24])
     if rt=='1':
         ans[id] = a[17:24]
+        prior[''.join(last[id])]+=1
         for col in ('A','B','C','D','E','F','G'):
             val = a[ord(col)-48]
             levels[col].add(val)
@@ -135,7 +134,6 @@ for l in f:
             uniq[id][col].add(a[ord(col)-48])
             freq[id][col][a[ord(col)-48]] += 1
             lcost[id][col][a[ord(col)-48]] += cs
-            prior[col][a[ord(col)-48]] += 1
             if id in last and a[ord(col)-48] == last[id][ord(col)-65]:
                 hist[id][col] += 1
             else:
@@ -188,6 +186,7 @@ f.write(',cp')
 f.write(',cpm')
 f.write(',dp')
 f.write(',dpm')
+f.write(',prp,prl,prrt')
 for st in sorted(list(states)):
     f.write(',%s' % st)
 #f.write(',csrt1')
@@ -214,8 +213,12 @@ for id in ans.keys():
         else:
             res=0
     f.write('%s,%d,%s,%s,' % (id,res,''.join(ans[id]),''.join(last[id])))
+    predstr=''
+    laststr=''
     for col in ('A','B','C','D','E','F','G'):
         f.write('%d' % pred[col][int(id)])
+        predstr+=str(pred[col][int(id)])
+        laststr+=str(last[id][tval(col)])
     diff=0
     for col in ('A','B','C','D','E','F','G'):
         if int(last[id][tval(col)])!=int(pred[col][int(id)]):
@@ -263,6 +266,7 @@ for id in ans.keys():
     f.write(',%s' % cpm[id])
     f.write(',%s' % dp[id])
     f.write(',%s' % dpm[id])
+    f.write(',%d,%d,%f' % (prior[predstr],prior[laststr],(prior[predstr]+50.0)/(prior[laststr]+50)))
     #f.write(',%s' % predg[int(id)])
     for st in sorted(list(states)):
         f.write(',%d' % int(state[id]==st))

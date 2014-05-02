@@ -34,16 +34,19 @@ y=X.pop('y')
 ans=X.pop('ans')
 last=X.pop('last')
 pred=X.pop('pred')
+x1=X.pop('prp')
+x1=X.pop('prl')
+x1=X.pop('prrt')
 
 fo=open('pred_fbz.csv','w')
 imp = Imputer(strategy='most_frequent')
 #for mf in (8,11,):
 for mf in (5,):
     #for mn in (1,5,20,):
-    for mn in (50,):
+    for mn in (20,):
         ttr = 0
         #for tr in (200,400,600):
-        for tr in (400,):
+        for tr in (200,400,600):
             scp = defaultdict(int)
             scl = defaultdict(int)
             rsp = defaultdict(int)
