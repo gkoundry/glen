@@ -79,7 +79,7 @@ hour={}
 time1={}
 time2={}
 quotes = defaultdict(int)
-f=open('trains4.csv','r')
+f=open('trains1.csv','r')
 #f=open('train.csv','r')
 h=f.readline()
 for l in f:
@@ -155,7 +155,7 @@ for l in f:
             llast[id] = last[id][:]
         last[id] = a[17:24]
 
-f=open('train4_12'+target+'.csv','w')
+f=open('train12'+target+'.csv','w')
 f.write('id,y,ls,ans,last,rest')
 for col in ('A','B','C','D','E','F','G'):
     for lvl in sorted(list(levels[col])):
