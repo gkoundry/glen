@@ -153,7 +153,7 @@ for l in f:
     last[id] = a[17:24]
     lastid=id
 
-f=open('trainf12t'+target+'.csv','w')
+f=open('train12t'+target+'.csv','w')
 f.write('id,ls,last')
 for col in ('A','B','C','D','E','F','G'):
     for lvl in sorted(list(levels[col])):

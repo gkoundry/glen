@@ -52,7 +52,7 @@ y=X.pop('y')
 last=X.pop('last')
 ans=X.pop('ans')
 
-Xv=pandas.read_csv("trainf12t%s.csv" % (COL1,))
+Xv=pandas.read_csv("train12t%s.csv" % (COL1,))
 ridv=Xv.pop('id').apply(str)
 lsv=Xv.pop('ls')
 lastv=Xv.pop('last')
