@@ -13,11 +13,29 @@ robjects.conversion.py2ri = numpy2ri
 from rpy2.robjects.packages import importr
 rgbm = importr("gbm")
 
+#A tr200 mf9 mn20 scp 85983 scl 85265 rsp 52406 rsl 52638 tot 97009
+#B tr200 mf9 mn20 scp 86257 scl 86221 rsp 52638 rsl 52638 tot 97009
+#C tr200 mf9 mn20 scp 85486 scl 84656 rsp 52514 rsl 52638 tot 97009
+#D tr200 mf9 mn20 scp 88317 scl 87868 rsp 52530 rsl 52638 tot 97009
+#E tr200 mf9 mn20 scp 86560 scl 86404 rsp 52628 rsl 52638 tot 97009
+#F tr200 mf9 mn20 scp 85436 scl 84974 rsp 52491 rsl 52638 tot 97009
+#G tr200 mf9 mn20 scp 78549 scl 77690 rsp 52855 rsl 52638 tot 97009
+
+#wa
+#A tr200 mf9 mn20 scp 85992 scl 85265 rsp 52417 rsl 52638 tot 97009
+#B tr200 mf9 mn20 scp 86256 scl 86221 rsp 52638 rsl 52638 tot 97009
+#C tr200 mf9 mn20 scp 85501 scl 84656 rsp 52517 rsl 52638 tot 97009
+#D tr200 mf9 mn20 scp 88334 scl 87868 rsp 52540 rsl 52638 tot 97009
+#F tr200 mf9 mn20 scp 85436 scl 84974 rsp 52492 rsl 52638 tot 97009
+#E tr200 mf9 mn20 scp 86574 scl 86404 rsp 52619 rsl 52638 tot 97009
+#G tr200 mf9 mn20 scp 78609 scl 77690 rsp 52870 rsl 52638 tot 97009
+
+#F tr200 mf9 mn20 scp 85434 scl 84974 rsp 52468 rsl 52638 tot 97009
 LR=0.03
 if len(sys.argv)>1:
     COL1=sys.argv[1]
 else:
-    COL1='F'
+    COL1='B'
 LEVELS={
     'A': ('0','1','2'),
     'B': ('0','1'),
@@ -38,13 +56,10 @@ ans=X.pop('ans')
 
 fo=open('pred'+COL1+'.csv','w')
 imp = Imputer(strategy='most_frequent')
-for mf in (5,):
-#for mf in (5,):
-    #for mn in (1,20,100,):
+for mf in (9,):
     for mn in (20,):
         ttr = 0
-        #for tr in (100,200,400,):
-        for tr in (600,):
+        for tr in (200,):
             scp = 0
             scl = 0
             rsp = 0
@@ -75,7 +90,8 @@ for mf in (5,):
                         scl += 1
                         if rtest[i]==1:
                             rsl += 1
-                    fo.write("%07d,%02d\n" % (idtest[i],levels[pred[i]]))
+                    #fo.write("%07d,%d\n" % (idtest[i],levels[pred[i]]))
+                    fo.write("%07d,%s\n" % (idtest[i],','.join([str(j[0]) for j in pp[i].tolist()])))
                     aa = '%07d' % anstest[i]
                     ab = '%07d' % lasttest[i]
                     p1 = '%02d' % int(levels[pred[i]])
@@ -83,10 +99,16 @@ for mf in (5,):
                     ab[ord(COL1)-65] = p1[0]
                     ab=''.join(ab)
                     #print '%s %s %s %d' % ( idtest[i],aa,ab, int(int(levels[pred[i]])==int(a) and rtest[i]==1))
-                    if int(levels[pred[i]])==int(a):
-                        scp += 1
-                        if rtest[i]==1:
-                            rsp += 1
+                    if pp[i][pred[i]] > 1.0/len(LEVELS[COL1])+0.1:
+                        if int(levels[pred[i]])==int(a):
+                            scp += 1
+                            if rtest[i]==1:
+                                rsp += 1
+                    else:
+                        if int(lstest[i])==int(a):
+                            scp += 1
+                            if rtest[i]==1:
+                                rsp += 1
                     tot += 1
             print '%s tr%d mf%d mn%d scp %d scl %d rsp %d rsl %d tot %d' % (COL1,tr,mf,mn,scp,scl,rsp,rsl,tot)
             sys.stdout.flush()

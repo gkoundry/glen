@@ -34,9 +34,10 @@ y=X.pop('y')
 ans=X.pop('ans')
 last=X.pop('last')
 pred=X.pop('pred')
-x1=X.pop('prp')
-x1=X.pop('prl')
-x1=X.pop('prrt')
+pred2=X.pop('pred2')
+#x1=X.pop('prp')
+#x1=X.pop('prl')
+#x1=X.pop('prrt')
 
 fo=open('pred_fbz.csv','w')
 imp = Imputer(strategy='most_frequent')
@@ -46,7 +47,7 @@ for mf in (5,):
     for mn in (20,):
         ttr = 0
         #for tr in (200,400,600):
-        for tr in (200,400,600):
+        for tr in (10,200,400):
             scp = defaultdict(int)
             scl = defaultdict(int)
             rsp = defaultdict(int)
@@ -69,12 +70,12 @@ for mf in (5,):
                 anstrain = ans.values[train]
                 predtrain = pred.values[train]
                 idtest = rid.values[test].astype(float)
-                m=rgbm.gbm_fit(xtrain,ytrain,nTrain=xtrain.shape[0],bag_fraction=1,n_trees=tr,verbose=False,keep_data=False,n_minobsinnode=mn,distribution='bernoulli',interaction_depth=mf,shrinkage=LR) #, w=wtrain[rows]*2.0)
+                m=rgbm.gbm_fit(xtrain,ytrain,nTrain=xtrain.shape[0],bag_fraction=1,n_trees=tr,verbose=False,keep_data=False,n_minobsinnode=mn,distribution='gaussian',interaction_depth=mf,shrinkage=LR) #, w=wtrain[rows]*2.0)
                 #print rgbm.pretty_gbm_tree(m,1)
                 pp=np.array(rgbm.predict_gbm(m,xtest,n_trees=tr))
                 pt=np.array(rgbm.predict_gbm(m,xtrain,n_trees=tr))
                 #for th in (0.0,0.2):
-                for th in (-2.6,-2.3,-2,-1.7,-1.4,-0.7,):
+                for th in (0,0.5,1.0,1.5,2.0,2.5,3.0):
                     for i,a in enumerate(ytrain):
                         if pt[i]>th:
                             if predtrain[i]==anstrain[i]:

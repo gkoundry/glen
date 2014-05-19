@@ -28,6 +28,13 @@ def tdiff(t1,t2):
     if t1<=t2:
         return t2-t1
     return t2+24*60-t1
+def avg(d):
+    tot=0
+    cnt=0
+    for k,v in d.items():
+        tot+=int(k)*v
+        cnt+=v
+    return tot*1.0/cnt
 
 levels = { 'A':set(),'B':set(),'C':set(),'D':set(),'E':set(),'F':set(),'G':set() }
 
@@ -59,6 +66,8 @@ prior={}
 lcost={}
 cost1={}
 cost2={}
+wavg={}
+wtot={}
 uniq={}
 states = set()
 for col in ('A','B','C','D','E','F','G'):
@@ -70,7 +79,8 @@ hour={}
 time1={}
 time2={}
 quotes = defaultdict(int)
-f=open('trains1.csv','r')
+f=open('trains4.csv','r')
+#f=open('train.csv','r')
 h=f.readline()
 for l in f:
     a=l.rstrip().split(',')
@@ -123,12 +133,16 @@ for l in f:
             lcost[id] = {}
             hist[id] = {}
             uniq[id] = {}
+            wavg[id]=defaultdict(float)
+            wtot[id]=defaultdict(int)
             for col in ('A','B','C','D','E','F','G'):
                 uniq[id][col] = set()
                 freq[id][col] = defaultdict(int)
                 lcost[id][col]=defaultdict(int)
                 hist[id][col]=defaultdict(int)
         for col in ('A','B','C','D','E','F','G'):
+            wavg[id][col]+=int(a[ord(col)-48])*(2**int(a[1]))
+            wtot[id][col]+=(2**int(a[1]))
             uniq[id][col].add(a[ord(col)-48])
             freq[id][col][a[ord(col)-48]] += 1
             lcost[id][col][a[ord(col)-48]] += cs
@@ -141,7 +155,7 @@ for l in f:
             llast[id] = last[id][:]
         last[id] = a[17:24]
 
-f=open('train12'+target+'.csv','w')
+f=open('train4_12'+target+'.csv','w')
 f.write('id,y,ls,ans,last,rest')
 for col in ('A','B','C','D','E','F','G'):
     for lvl in sorted(list(levels[col])):
@@ -180,6 +194,8 @@ f.write(',dp')
 f.write(',dpm')
 for st in sorted(list(states)):
     f.write(',%s' % st)
+for col in ('A','B','C','D','E','F','G'):
+    f.write(',avg%s' % col)
 #f.write(',csrt1')
 #f.write(',csrt2')
 f.write('\n')
@@ -226,6 +242,9 @@ for id in ans.keys():
     f.write(',%s' % dpm[id])
     for st in sorted(list(states)):
         f.write(',%d' % int(state[id]==st))
+    for col in ('A','B','C','D','E','F','G'):
+        f.write(',%f' % (wavg[id][col]/wtot[id][col]))
+        #f.write(',%f' % avg(freq[id][col]))
 #    c1 = 0
 #    c2 = 0
 #    t1 = 0

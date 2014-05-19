@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 import cPickle
 from collections import defaultdict
 
@@ -23,14 +24,40 @@ def tdiff(t1,t2):
     if t1<=t2:
         return t2-t1
     return t2+24*60-t1
+def highp(a,p):
+    mp=0
+    for i in a:
+        if i in p and p[i]>mp:
+            mp=p[i]
+            r=i
+    return r
 
+LEVELS={
+    'A': ('0','1','2'),
+    'B': ('0','1'),
+    'C': ('1','2','3','4'),
+    'D': ('1','2','3'),
+    'E': ('0','1'),
+    'F': ('0','1','2','3'),
+    'G': ('1','2','3','4'),
+}
 pred={}
+predp={}
 for col in ('A','B','C','D','E','F','G'):
     pred[col]={}
+    predp[col]={}
     f=open('pred'+col+'.csv')
     for l in f:
-        id,p=l.rstrip().split(',')
-        pred[col][int(id)]=int(p)
+        p=l.rstrip().split(',')
+        pred[col][int(p[0])]=np.argmax([float(i) for i in p[1:]])+int(LEVELS[col][0])
+        predp[col][int(p[0])]=[float(i) for i in p[1:]]
+#pred2={}
+#for col in ('A','B','C','D','E','F','G'):
+#    pred2[col]={}
+#    f=open('pred'+col+'.csv')
+#    for l in f:
+#        p=l.rstrip().split(',')
+#        pred2[col][int(p[0])]=np.argmax([float(i) for i in p[1:]])+int(LEVELS[col][0])
 
 levels = { 'A':set(),'B':set(),'C':set(),'D':set(),'E':set(),'F':set(),'G':set() }
 
@@ -70,6 +97,7 @@ day={}
 hour={}
 time1={}
 time2={}
+allq={}
 quotes = defaultdict(int)
 f=open('trains1.csv','r')
 h=f.readline()
@@ -125,6 +153,7 @@ for l in f:
             lcost[id] = {}
             hist[id] = {}
             uniq[id] = {}
+            allq[id] = []
             for col in ('A','B','C','D','E','F','G'):
                 uniq[id][col] = set()
                 freq[id][col] = defaultdict(int)
@@ -140,9 +169,10 @@ for l in f:
                 hist[id][col]=1
         if id in last:
             llast[id] = last[id][:]
+        allq[id].append(''.join(a[17:24]))
         last[id] = a[17:24]
 
-f=open('train12fb.csv','w')
+f=open('train12fbp.csv','w')
 f.write('id,y,ans,last,pred')
 for col in ('A','B','C','D','E','F','G'):
     f.write(',diff'+col)
@@ -204,12 +234,12 @@ for id in ans.keys():
     res = 0
     if pc==7:
         if pl<7:
-            res=1
+            res=6
         else:
-            res=0
+            res=1
     else:
         if pl==7:
-            res=0
+            res=-1
         else:
             res=0
     f.write('%s,%d,%s,%s,' % (id,res,''.join(ans[id]),''.join(last[id])))
@@ -219,6 +249,7 @@ for id in ans.keys():
         f.write('%d' % pred[col][int(id)])
         predstr+=str(pred[col][int(id)])
         laststr+=str(last[id][tval(col)])
+    #f.write(",%s" % highp(allq[id],prior))
     diff=0
     for col in ('A','B','C','D','E','F','G'):
         if int(last[id][tval(col)])!=int(pred[col][int(id)]):
@@ -234,8 +265,8 @@ for id in ans.keys():
         for lvl in sorted(list(levels[col])):
             f.write(',%d' % int(llast[id][tval(col)]==lvl))
     for col in ('A','B','C','D','E','F','G'):
-        for lvl in sorted(list(levels[col])):
-            f.write(',%d' % int(pred[col][int(id)]==int(lvl)))
+        f.write(',%s' % ','.join([str(i) for i in predp[col][int(id)]]))
+            #f.write(',%d' % int(pred[col][int(id)]==int(lvl)))
     for col in ('A','B','C','D','E','F','G'):
         for lvl in sorted(list(levels[col])):
             f.write(',%d' % freq[id][col][lvl])
