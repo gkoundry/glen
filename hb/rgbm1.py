@@ -40,10 +40,10 @@ eid=X['EventId']
 
 imp = Imputer(strategy='most_frequent')
 for mf in (7,):
-    for mn in (40,):
+    for mn in (200,):
         ttr = 0
-        for tr in (200,):
-            fo=open('predrgbm_%d_%f.csv' % (tr,LR),'w')
+        for tr in (500,):
+            fo=open('predrgbm_%d_%f_%d.csv' % (tr,LR,mn),'w')
             scs = 0
             scb = 0
             kf = KFold(X.shape[0], 2, shuffle=True, random_state=1234)
