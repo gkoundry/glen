@@ -3,29 +3,32 @@
 #include <string.h>
 #include <math.h>
 
+#define WLR 0.15
 #define PRED 1
 #if PRED==0
 #define FOLDS 5
 #else
 #define FOLDS 1
 #endif
-#define MAX_ITER 20
-#define WSHRINK 15
+#define MAX_ITER 160
+#define WSHRINK 1500
 #define LR 0.00005
 #define RC 0.0000000
 #define ROWS 250000
 #define ROWST 550000
 #define COLS 31
-#define COLS2 73
+#define COLS2 71
 //#define COLS2 42
 
 double coef[FOLDS][COLS2];
 char line[4096];
 double x[ROWS][COLS2],test[ROWS];
+double xt[ROWST][COLS2];
 double y[ROWS],w[ROWS];
 double srt[ROWS],predt[ROWS];
-int id[ROWS],idt[ROWST];
+int id[ROWS],idt[ROWST],levels[ROWS],levels2[ROWS],levelst[ROWST],levelst2[ROWST];
 int has_na[] = {0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0};
+int na_ind[] = {0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0};
 
 int cmpd(const void *a,const void *b) {
 	return (int)(*((double *)a)-*((double *)b));
@@ -40,10 +43,11 @@ double AMS(double s, double b) {
 
 double max_AMS() {
 
-double sc,bc,th,a,maxa; //,maxth;
+double sc,bc,th,a,maxa,maxth;
 int r;
 
 	maxa=0;
+	maxth=0;
 	for(th=0;th<4;th+=0.05) {
 		sc=0;
 		bc=0;
@@ -59,17 +63,28 @@ int r;
 		a=AMS(sc,bc);
 		if(a>maxa) {
 			maxa=a;
-//			maxth=th;
+			maxth=th;
 		}
 	}
+	fprintf(stderr,"th%f ",maxth);
 	return maxa;
+}
+
+int get_levelt(int r) {
+	if(levelst2[r]>3.2) return 4;
+	return levelst[r];
+}
+
+int get_level(int r) {
+	if(levels2[r]>3.2) return 4;
+	return levels[r];
 }
 
 int main() {
 
-char *p;
-int l2,r,c,mc,cv,l,tot;
-double sd[COLS2],avg[COLS2],bc,sc,med,pred,d,b[FOLDS],ll,llt;
+char *p,fname[256];
+int l2,r,c,mc,cv,l,tot,LEVEL;
+double lastsc,sd[COLS2],avg[COLS2],bc,sc,med[COLS2],pred,d,b[FOLDS],ll,llt;
 FILE *fp,*out;
 
 	for(r=0;r<ROWS;r++) {
@@ -89,17 +104,6 @@ FILE *fp,*out;
 		r++;
 	}
 	fclose(fp);
-#if PRED==1
-	fp=fopen("test.csv","r");
-	p = fgets(line,4096,fp);
-	r=0;
-	while(fgets(line,4096,fp)) {
-		p=strtok(line,","); 
-		idt[r]=atoi(p);
-		r++;
-	}
-	fclose(fp);
-#endif
 
 	fp=fopen("training.csv","r");
 	p = fgets(line,4096,fp);
@@ -108,8 +112,16 @@ FILE *fp,*out;
 		p=strtok(line,","); 
 		for(c=0;c<COLS;c++) {
 			x[r][c] = atof(p);
+			if(c==23) levels[r]=atoi(p);
+			if(c==8) levels2[r]=atof(p);
 			p=strtok(NULL,","); 
 		}
+		x[r][COLS2-1]=x[r][1]*x[r][8];
+		x[r][COLS2-2]=x[r][2]*x[r][8];
+		x[r][COLS2-3]=x[r][11]*x[r][12];
+		x[r][COLS2-4]=x[r][8]*x[r][14];
+		x[r][COLS2-5]=x[r][2]*x[r][4];
+		x[r][COLS2-6]=x[r][8]*x[r][12];
 		w[r] = atof(p);
 		p=strtok(NULL,","); 
 		if(p[0]=='s' || p[0]=='1')
@@ -147,9 +159,6 @@ FILE *fp,*out;
 		exit(1);
 	}
 
-#if PRED==0
-	out=fopen("predlr1.csv","w");
-#endif
 	mc = 0;
 	for(c=0;c<COLS;c++) {
 		if(has_na[c]) {
@@ -157,16 +166,16 @@ FILE *fp,*out;
 				srt[r] = x[r][c];
 			}
 			qsort(srt,ROWS,sizeof(double),cmpd);
-			med = srt[ROWS/2];
+			med[c] = srt[ROWS/2];
 			for(r=0;r<ROWS;r++) {
 				if(x[r][c] == -999) {
-					x[r][c] = med;
-					x[r][2*COLS+mc]=1;
+					x[r][c] = med[c];
+					if(na_ind[c]) x[r][2*COLS+mc]=1;
 				} else {
-					x[r][2*COLS+mc]=0;
+					if(na_ind[c]) x[r][2*COLS+mc]=0;
 				}
 			}
-			mc++;
+			if(na_ind[c]) mc++;
 		}
 	}
 
@@ -188,6 +197,56 @@ FILE *fp,*out;
 		}
 	}
 
+	fp=fopen("test.csv","r");
+	p = fgets(line,4096,fp);
+	r=0;
+	while(fgets(line,4096,fp)) {
+		p=strtok(line,","); 
+		idt[r]=atoi(p);
+		for(c=0;c<COLS;c++) {
+			xt[r][c] = atof(p);
+			if(c==23) levelst[r]=atoi(p);
+			if(c==8) levelst2[r]=atof(p);
+			p=strtok(NULL,","); 
+		}
+		xt[r][COLS2-1]=xt[r][1]*xt[r][8];
+		xt[r][COLS2-2]=xt[r][2]*xt[r][8];
+		xt[r][COLS2-3]=xt[r][11]*xt[r][12];
+		xt[r][COLS2-4]=xt[r][8]*xt[r][14];
+		xt[r][COLS2-5]=xt[r][2]*xt[r][4];
+		xt[r][COLS2-6]=xt[r][8]*xt[r][12];
+		r++;
+	}
+	fclose(fp);
+
+	fp=fopen("smootht_gaussian_10.000000_10.csv","r");
+	p = fgets(line,4096,fp);
+	r=0;
+	while(fgets(line,4096,fp)) {
+		p=strtok(line,","); 
+		for(c=0;c<COLS;c++) {
+			xt[r][31+c] = atof(p);
+			p=strtok(NULL,","); 
+		}
+		r++;
+	}
+	fclose(fp);
+
+	mc = 0;
+	for(c=0;c<COLS;c++) {
+		if(has_na[c]) {
+			for(r=0;r<ROWST;r++) {
+				if(xt[r][c] == -999) {
+					xt[r][c] = med[c];
+					if(na_ind[c]) xt[r][2*COLS+mc]=1;
+				} else {
+					if(na_ind[c]) xt[r][2*COLS+mc]=0;
+				}
+			}
+			if(na_ind[c]) mc++;
+		}
+	}
+
 /*
 	for(r=0;r<500;r++) {
 		for(c=0;c<COLS2;c++) {
@@ -198,6 +257,7 @@ FILE *fp,*out;
 	exit(0);
 */
 
+	for(LEVEL=0;LEVEL<5;LEVEL++) {
 	for(cv=0;cv<FOLDS;cv++) {
 		b[cv]=0;
 		for(c=0;c<COLS2;c++) {
@@ -205,12 +265,17 @@ FILE *fp,*out;
 		}
 	}
 
+	lastsc=999;
 	for(l=0;l<=MAX_ITER;l++) {
 		sc = 0;
 		ll = 0;
 		llt = 0;
 		tot = 0;
 		bc = 0;
+#if PRED==0
+		sprintf(fname,"predlr1l%d.csv",LEVEL);
+		out=fopen(fname,"w");
+#endif
 		for(cv=0;cv<FOLDS;cv++) {
 		/*
 			for(r=0;r<ROWS;r++) {
@@ -220,9 +285,9 @@ FILE *fp,*out;
 				//printf("%d %d %f\n",cv,r,x[r][2]);
 			}
 			*/
-			for(l2=0;l2<10;l2++) {
+			for(l2=0;l2<30;l2++) {
 				for(r=0;r<ROWS;r++) {
-					if(test[r] != cv) {
+					if(get_level(r)==LEVEL && test[r] != cv) {
 						pred=b[cv];
 						for(c=0;c<COLS2;c++) {
 							//printf("%f %f",coef[cv][c],x[r][c]);
@@ -235,15 +300,36 @@ FILE *fp,*out;
 						b[cv] += d*LR;
 						for(c=0;c<COLS2;c++) {
 							//printf("%d %d %f %f %f %f %f\n",cv,r,d,x[r][c],coef[cv][c],y[r],pred);
-							//coef[cv][c] += d*x[r][c]*LR-fabs(RC*coef[cv][c]);
-							coef[cv][c] += ((w[r]-1)/WSHRINK+1)*d*x[r][c]*LR-fabs(RC*coef[cv][c]);
+							coef[cv][c] += d*x[r][c]*LR-fabs(RC*coef[cv][c]);
+							//coef[cv][c] += ((w[r]-1)/WSHRINK+1)*d*x[r][c]*LR-fabs(RC*coef[cv][c]);
+							//coef[cv][c] += (1+WLR*(1-y[r])*(pred>0.5)*w[r])*d*x[r][c]*LR-fabs(RC*coef[cv][c]);
 							//coef[cv][c] += -((w[r]-1)/WSHRINK/60000)*x[r][c]+d*x[r][c]*LR-fabs(RC*coef[cv][c]);
 						}
 					}
 				}
 			}
+
+double ams_d(double pred,int r) {
+
+double dda,squ,dsqu,s0,b0,si,bi,sbi10d,lsbid,sid;
+	//p = 1/(1+exp(-(a*x+b+y+c)))
+	//sc = (2 *((s+b+10) * log(1+s/(b+10)) -s)) ^ 0.5
+	//dsc/da = 2 * ( (s+b+10)' * log(1+s/(b+10)) + (s+b+10) * log(1+s/(b+10))' - s')
+
+	s0 = 230;
+	b0 = 4000;
+	si = s0 + w[r] * pred * y[r];
+	bi = b0 + w[r] * pred * (1-y[r]);
+	squ = 2 *((si+bi+10) * log(1+si/(bi+10)) - si);
+	sbi10d =
+	lsbid =
+	sid =
+	dsqu = 2 * (sbi10d * log(1+si/(bi+10)) + (si+bi+10) * lsbid - sid);
+	dda = 0.5 * squ * dsqu;
+	return dda;
+}
 			for(r=0;r<ROWS;r++) {
-				if(test[r] != cv) {
+				if(get_level(r)==LEVEL && test[r] != cv) {
 					pred=b[cv];
 					for(c=0;c<COLS2;c++) {
 						pred+=coef[cv][c] * x[r][c];
@@ -258,7 +344,7 @@ FILE *fp,*out;
 			}
 #if PRED==0
 			for(r=0;r<ROWS;r++) {
-				if(test[r] == cv) {
+				if(get_level(r)==LEVEL && test[r] == cv) {
 					pred=b[cv];
 					for(c=0;c<COLS2;c++) {
 						pred+=coef[cv][c] * x[r][c];
@@ -274,32 +360,57 @@ FILE *fp,*out;
 			}
 #endif
 		} // end cv
-		fprintf(stderr,"%f %f %f %f %f\n",sc,bc,max_AMS(),-ll/ROWS,-llt/tot);
-	}
 #if PRED==0
 	fclose(out);
 #endif
+		fprintf(stderr,"%d %f %f %f %f %f %d\n",LEVEL,sc,bc,max_AMS(),-ll/ROWS,-llt/tot,tot);
+		if(fabs(-llt/tot-lastsc)<0.0000005) break;
+	}
 
 #if PRED==1
-	fp=fopen("smootht_gaussian_10.000000_10.csv","r");
-	p = fgets(line,4096,fp);
-	r=0;
-	while(fgets(line,4096,fp)) {
-		p=strtok(line,","); 
-		pred=b[0];
-		for(c=0;c<COLS;c++) {
-			d = atof(p);
-			if(sd[c]>0.00001) {
-				d = (d-avg[c])/sd[c];
+/*
+	for(r=0;r<100;r++) {
+		if(get_levelt(r)==LEVEL) {
+			pred=b[0];
+			printf("r %3d c %10.7f",r,b[0]);
+			for(c=0;c<COLS2;c++) {
+				d = xt[r][c];
+				if(sd[c]>0.00001) {
+					d = (d-avg[c])/sd[c];
+				}
+				printf(" %10.7f * %10.7f ",d,coef[0][c]);
+				pred+=d*coef[0][c];
 			}
-			pred+=d*coef[0][c];
-			p=strtok(NULL,","); 
+			printf("%6d,%f\n",idt[r],pred);
 		}
-		printf("%d,%f\n",idt[r],pred);
-		r++;
+		if(get_level(r)==LEVEL) {
+			pred=b[0];
+			printf("r %3d c %10.7f",r,b[0]);
+			for(c=0;c<COLS2;c++) {
+				d = x[r][c];
+				printf(" %10.7f * %10.7f ",d,coef[0][c]);
+				pred+=d*coef[0][c];
+			}
+			printf("%6d,%f\n",id[r],pred);
+		}
 	}
-	fclose(fp);
+	exit(1);
+	*/
+	for(r=0;r<ROWST;r++) {
+		if(get_levelt(r)==LEVEL) {
+			pred=b[0];
+			for(c=0;c<COLS2;c++) {
+				d = xt[r][c];
+				if(sd[c]>0.00001) {
+					d = (d-avg[c])/sd[c];
+				}
+				pred+=d*coef[0][c];
+			}
+			printf("%d,%f\n",idt[r],pred);
+		}
+	}
 #endif
+	}
 	return 0;
 }
 

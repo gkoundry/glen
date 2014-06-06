@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 
-#define PRED 1
+#define PRED 0
 #if PRED==0
 #define FOLDS 5
 #else
@@ -11,7 +11,7 @@
 #endif
 #define MAX_ITER 20
 #define WSHRINK 15
-#define LR 0.00005
+#define LR 0.000001
 #define RC 0.0000000
 #define ROWS 250000
 #define ROWST 550000
@@ -40,11 +40,17 @@ double AMS(double s, double b) {
 
 double max_AMS() {
 
-double sc,bc,th,a,maxa; //,maxth;
+double minp,maxp,sc,bc,th,a,maxa; //,maxth;
 int r;
 
+	minp=9e29;
+	maxp=-9e20;
+	for(r=0;r<ROWS;r++) {
+		if(predt[r]<minp) minp=predt[r];
+		if(predt[r]>maxp) maxp=predt[r];
+	}
 	maxa=0;
-	for(th=0;th<4;th+=0.05) {
+	for(th=minp;th<maxp;th+=(maxp-minp)/50) {
 		sc=0;
 		bc=0;
 		for(r=0;r<ROWS;r++) {
@@ -228,15 +234,12 @@ FILE *fp,*out;
 							//printf("%f %f",coef[cv][c],x[r][c]);
 							pred+=coef[cv][c] * x[r][c];
 						}
-						pred = 1/(1+exp(-pred));
-						if(pred<0.001) pred=0.001;
-						if(pred>0.999) pred=0.999;
-						d = y[r]-pred;
+						d = -w[r]*(y[r]*(2*4000-w[r]*(y[r]-1)*pred)+230*(y[r]-1))/(2*pow(4000-w[r]*(y[r]-1)*pred,1.5));
 						b[cv] += d*LR;
 						for(c=0;c<COLS2;c++) {
 							//printf("%d %d %f %f %f %f %f\n",cv,r,d,x[r][c],coef[cv][c],y[r],pred);
-							//coef[cv][c] += d*x[r][c]*LR-fabs(RC*coef[cv][c]);
-							coef[cv][c] += ((w[r]-1)/WSHRINK+1)*d*x[r][c]*LR-fabs(RC*coef[cv][c]);
+							coef[cv][c] += d*x[r][c]*LR;
+							//coef[cv][c] += ((w[r]-1)/WSHRINK+1)*d*x[r][c]*LR-fabs(RC*coef[cv][c]);
 							//coef[cv][c] += -((w[r]-1)/WSHRINK/60000)*x[r][c]+d*x[r][c]*LR-fabs(RC*coef[cv][c]);
 						}
 					}
@@ -248,11 +251,7 @@ FILE *fp,*out;
 					for(c=0;c<COLS2;c++) {
 						pred+=coef[cv][c] * x[r][c];
 					}
-					pred = 1/(1+exp(-pred));
-					if(pred<0.001) pred=0.001;
-					if(pred>0.999) pred=0.999;
-					llt += y[r] * log(pred) + (1-y[r])*log(1-pred);
-					//llt += (y[r]-pred)*(y[r]-pred);
+					llt += (y[r]-pred)*(y[r]-pred);
 					tot+=1;
 				}
 			}
@@ -265,11 +264,7 @@ FILE *fp,*out;
 					}
 					if(l==MAX_ITER) fprintf(out,"%d,%f\n",id[r],pred);
 					predt[r]=pred;
-					pred = 1/(1+exp(-pred));
-					if(pred<0.001) pred=0.001;
-					if(pred>0.999) pred=0.999;
-					ll += y[r] * log(pred) + (1-y[r])*log(1-pred);
-					//ll += (y[r]-pred)*(y[r]-pred);
+					ll += (y[r]-pred)*(y[r]-pred);
 				}
 			}
 #endif

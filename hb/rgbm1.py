@@ -13,6 +13,7 @@ rpy2.robjects.numpy2ri.activate()
 from rpy2.robjects.numpy2ri import numpy2ri
 robjects.conversion.py2ri = numpy2ri
 from rpy2.robjects.packages import importr
+import pandas.rpy.common as com 
 rgbm = importr("gbm")
 
 def AMS(s, b):
@@ -32,7 +33,8 @@ def AMS(s, b):
 
 LR=0.1
 
-X=pandas.read_csv("training.csv")
+X=pandas.read_csv("training.csv",na_values='-999.0')
+X=X.astype(object).fillna(rpy2.rinterface.NA_Logical)
 w=X.pop('Weight')
 y=X.pop('Label')
 y=(y=='s').astype(int)
@@ -42,8 +44,8 @@ imp = Imputer(strategy='most_frequent')
 for mf in (7,):
     for mn in (200,):
         ttr = 0
-        for tr in (500,):
-            fo=open('predrgbm_%d_%f_%d.csv' % (tr,LR,mn),'w')
+        for tr in (5,):
+            fo=open('predrgbm_%d_%f_%d_na.csv' % (tr,LR,mn),'w')
             scs = 0
             scb = 0
             kf = KFold(X.shape[0], 2, shuffle=True, random_state=1234)
@@ -62,11 +64,13 @@ for mf in (7,):
                 #m=SGDClassifier(alpha=0.000001,loss='log')
                 #m.fit(xtrain,ytrain)
                 #pp=m.predict_proba(xtest)[:,1]
-                m=rgbm.gbm_fit(xtrain,ytrain,nTrain=xtrain.shape[0],var_names=list(X.columns),bag_fraction=1,n_trees=tr,verbose=False,keep_data=False,n_minobsinnode=mn,distribution='bernoulli',interaction_depth=mf,shrinkage=LR) #, w=wtrain[rows]*2.0)
+                nt = xtrain.shape[0]
+                #xtrain=robjects.r['data.frame'](xtrain)
+                m=rgbm.gbm_fit(xtrain,ytrain,nTrain=nt,var_names=list(X.columns),bag_fraction=1,n_trees=tr,verbose=False,keep_data=False,n_minobsinnode=mn,distribution='bernoulli',interaction_depth=mf,shrinkage=LR) #, w=wtrain[rows]*2.0)
                 ppp=rgbm.predict_gbm(m,xtest,n_trees=tr,type="response")
                 pp = np.array(ppp)
                 #print pp.shape
-                for i,a in enumerate(ytest):
+                for i,a in enumerate(eidtest):
                     fo.write('%s,%f\n' % (eidtest[i],pp[i]))
                     if pp[i]>0.5:
                         if a==1:
