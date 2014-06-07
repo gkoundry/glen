@@ -135,7 +135,7 @@ FILE *fp,*out;
 					}
 				}
 			}
-			sx[r1][c]=wsum/wtot;
+			sx[r1][c]=log(wsum/wtot) - log(1-wsum/wtot);
 		}
 	}
 

@@ -32,7 +32,7 @@ def AMS(s, b):
 
 LR=0.1
 
-X=pandas.read_csv("training.csv")
+X=pandas.read_csv("training.csv",na_values='-999.0')
 w=X.pop('Weight')
 y=X.pop('Label')
 y=(y=='s').astype(int)
@@ -43,9 +43,9 @@ eidt=Xt['EventId']
 
 #imp = Imputer(strategy='most_frequent')
 mf=7
-mn=40
-tr=200
-fo=open('predrgbm_%d_%f.csv' % (tr,LR),'w')
+mn=200
+tr=500
+fo=open('predrgbm_%d_%f_%d_p.csv' % (tr,LR,mn),'w')
 xtrain = X.values
 #                xtrain = imp.fit_transform(xtrain)
 xtest = Xt.values
@@ -62,5 +62,5 @@ m=rgbm.gbm_fit(xtrain,ytrain,nTrain=xtrain.shape[0],var_names=list(X.columns),ba
 ppp=rgbm.predict_gbm(m,xtest,n_trees=tr,type="response")
 pp = np.array(ppp)
 #print pp.shape
-for i,a in enumerate(ytest):
+for i,a in enumerate(eidtest):
     fo.write('%s,%f\n' % (eidtest[i],pp[i]))
