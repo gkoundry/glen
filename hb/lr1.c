@@ -9,8 +9,9 @@
 #else
 #define FOLDS 1
 #endif
-#define MAX_ITER 20
+#define MAX_ITER 30
 #define WSHRINK 10
+#define WLR 0.15
 #define LR 0.00005
 #define RC 0.0000000
 #define ROWS 250000
@@ -25,6 +26,9 @@ double x[ROWS][COLS2],test[ROWS];
 double y[ROWS],w[ROWS];
 double srt[ROWS],predt[ROWS];
 int id[ROWS],idt[ROWST];
+//
+// MERGE DUPS
+// 
 int has_na[] = {0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0};
 
 int cmpd(const void *a,const void *b) {
@@ -37,6 +41,32 @@ double AMS(double s, double b) {
     radicand = 2 *( (s+b+br) * log (1.0 + s/(b+br)) -s);
     return sqrt(radicand);
 }
+
+/*
+s = w * y / (1 + exp(-(a*m+b*n+c*o)))
+b = w * (1-y) / (1 + exp(-(a*m+b*n+c*o)))
+
+     (s+b+br) * log(1.0 + s/(b+br)) - s
+
+	 (s+b+10)' * log(1.0 + s/(b+br)) + (s+b+10) * log(1.0 + s/(b+br))' - s'
+
+(s+b+10)' = w * y / (1 + exp(-(a*m+b*n+c*o))) + w * (1-y) / (1 + exp(-(a*m+b*n+c*o))) = mwe/(e+1)^2
+log(1.0 + s/(b+br))' = log(1+(w * y / (1 + exp(-(a*m+b*n+c*o))))/(w * (1-y) / (1 + exp(-(a*m+b*n+c*o)))+10))
+
+mwe/(e+1)^2 * log(1.0 + s/(b+br)) + (w * y / (1 + exp(-(a*m+b*n+c*o))) + w * (1-y) / (1 + exp(-(a*m+b*n+c*o)))+10) * 
+-10mwye/(((w+10)e+10)*((w(y-1)-10)e-10)) - mwye/(e+1)^2 
+
+
+	s = w*y*p
+	b = w*(1-y)*p
+((w*y*(1/(1+exp(-(a*m+b*n+c*o))))+w*(1-y)*(1/(1+exp(-(a*m+b*n+c*o))))+10)*
+log(1.0+w*y*(1/(1+exp(-(a*m+b*n+c*o))))/(w*(1-y)*p+10))-w*y*(1/(1+exp(-(a*m+b*n+c*o)))))
+d/da ((w*y*(1/(1+exp(-(a*m+b*n+c*o))))+w*(1-y)*(1/(1+exp(-(a*m+b*n+c*o))))+10)*log(1.0+w*y*(1/(1+exp(-(a*m+b*n+c*o))))/(w*(1-y)*p+10))-w*y*(1/(1+exp(-(a*m+b*n+c*o)))))
+
+2 *( (w*y*(1/(1+exp(-(a*m+b*n+c*o))))+w*(1-y)*(1/(1+exp(-(a*m+b*n+c*o))))+10) * log (1.0 + s/(b+br)) -s);
+*log(1+w*y*(1/(1+exp(-(a*m+b*n+c*o))))/(w*(1-y)*(1/(1+exp(-(a*m+b*n+c*o))))))
+*/
+
 
 double max_AMS() {
 
@@ -124,7 +154,7 @@ FILE *fp,*out;
 		exit(1);
 	}
 
-	fp=fopen("smooth_gaussian_2.000000_100.csv","r");
+	fp=fopen("smooth_gaussian_10.000000_10.csv","r");
 	p = fgets(line,4096,fp);
 	r=0;
 	while(fgets(line,4096,fp)) {
@@ -148,7 +178,7 @@ FILE *fp,*out;
 	}
 
 #if PRED==0
-	out=fopen("predlr1.csv","w");
+	out=fopen("predlr1g10_10.csv","w");
 #endif
 	mc = 0;
 	for(c=0;c<COLS;c++) {
@@ -232,10 +262,24 @@ FILE *fp,*out;
 						if(pred<0.001) pred=0.001;
 						if(pred>0.999) pred=0.999;
 						d = y[r]-pred;
+						/*
+s = w * y / (1 + exp(-(a*m+b*n+c*o)))
+b = w * (1-y) / (1 + exp(-(a*m+b*n+c*o)))
+mwe/(e+1)^2 * log(1.0 + s/(b+br)) + (w * y / (1 + exp(-(a*m+b*n+c*o))) + w * (1-y) / (1 + exp(-(a*m+b*n+c*o)))+10) * 
+-10mwye/(((w+10)e+10)*((w(y-1)-10)e-10)) - mwye/(e+1)^2 
+
+ep = exp(pred1)
+d1 = w[r] * ep/((ep+1)*(ep+1));
+d2 = w[r] * y[r] * pred + w[r] * (1-y[r])*pred+10;
+d3 = -10 * w[r] *y[r]*ep/(((w[r]+10)*ep+10)*((w[r]*(y[r]-1)-10)*ep-10)) 
+d4 = w[r]*y[r]*ep/((ep+1)*(ep+1));
+						
+						b[cv] += 
+						*/
 						b[cv] += d*LR;
 						for(c=0;c<COLS2;c++) {
 							//printf("%d %d %f %f %f %f %f\n",cv,r,d,x[r][c],coef[cv][c],y[r],pred);
-							coef[cv][c] += d*x[r][c]*LR-fabs(RC*coef[cv][c]);
+							coef[cv][c] += (1+(1-y[r])*(pred>0.5)*w[r]*WLR)*d*x[r][c]*LR-fabs(RC*coef[cv][c]);
 							//coef[cv][c] += ((w[r]-1)/WSHRINK+1)*d*x[r][c]*LR-fabs(RC*coef[cv][c]);
 							//coef[cv][c] += -((w[r]-1)/WSHRINK/60000)*x[r][c]+d*x[r][c]*LR-fabs(RC*coef[cv][c]);
 						}

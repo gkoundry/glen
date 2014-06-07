@@ -40,10 +40,10 @@ eid=X['EventId']
 
 imp = Imputer(strategy='most_frequent')
 for mf in (7,):
-    for mn in (200,):
+    for mn in (40,):
         ttr = 0
-        for tr in (500,):
-            fo=open('predrgbm_%d_%f_%d.csv' % (tr,LR,mn),'w')
+        for tr in (200,):
+            fo=open('predrgbm_%d_%f_%d_w.csv' % (tr,LR,mn),'w')
             scs = 0
             scb = 0
             kf = KFold(X.shape[0], 2, shuffle=True, random_state=1234)
@@ -62,7 +62,7 @@ for mf in (7,):
                 #m=SGDClassifier(alpha=0.000001,loss='log')
                 #m.fit(xtrain,ytrain)
                 #pp=m.predict_proba(xtest)[:,1]
-                m=rgbm.gbm_fit(xtrain,ytrain,nTrain=xtrain.shape[0],var_names=list(X.columns),bag_fraction=1,n_trees=tr,verbose=False,keep_data=False,n_minobsinnode=mn,distribution='bernoulli',interaction_depth=mf,shrinkage=LR) #, w=wtrain[rows]*2.0)
+                m=rgbm.gbm_fit(xtrain,ytrain,nTrain=xtrain.shape[0],var_names=list(X.columns),bag_fraction=1,n_trees=tr,verbose=False,keep_data=False,n_minobsinnode=mn,distribution='bernoulli',interaction_depth=mf,shrinkage=LR, w=wtrain)
                 ppp=rgbm.predict_gbm(m,xtest,n_trees=tr,type="response")
                 pp = np.array(ppp)
                 #print pp.shape

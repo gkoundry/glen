@@ -24,15 +24,18 @@ for l in f:
     pg[a[0]]=[float(a[1])]
 
 f=open('predlr1.csv','r')
+#f=open('predlr1g10_10.csv','r') #3.063226
 for l in f:
     a=l.rstrip().split(',')
-    pg[a[0]].append(float(a[1]))
+    pg[a[0]].append(1.5+float(a[1]))
 
 #f=open('predrgbm_200_0.100000.csv','r') #3.454425
 #f=open('predrgbm_400.csv','r') #3.403357
 f=open('predrgbm_300_0.100000_200.csv','r') #3.480559
+#f=open('predrgbm_200_0.100000_40_w.csv','r') #3.269896
 for l in f:
     a=l.rstrip().split(',')
+    #pg[a[0]].append(2.1+float(a[1]))
     pg[a[0]].append(1.2+math.log(float(a[1]))-math.log(1-float(a[1])))
 
 f=open('training.csv','r')
@@ -50,15 +53,16 @@ y = np.ascontiguousarray(np.array(d[:,3])).astype(float)
 m = GLM()
 m.fit(x,y,distribution='Bernoulli')
 print m.coef_
-for w1 in(0,): #0.05,):
-    for w2 in(1,): #0.15,0.2,0.25,0.3):
+for w1 in(0.06,):
+    for w2 in(0.44,0.47,0.50):
         for th in np.arange(2.1,3.1,0.02):
             s=0
             b=0
             for i,j in pg.items():
                 #if m.coef_[0]+m.coef_[1]*j[0]+m.coef_[2]*j[1]+m.coef_[3]*j[2]>th:
                 #if (j[0]*(1-w1-w2)+w1*j[1]+w2*j[2])>th:
-                if j[2]>th:
+                if (j[0]*0.48+w1*j[1]+w2*j[2])>th:
+                #if j[1]>th:
                     if j[3]==1:
                         s+=wt[i]
                     else:
