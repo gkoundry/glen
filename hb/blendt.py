@@ -29,7 +29,7 @@ for l in f:
 #f=open('predlr1.csv','r') #3.086161
 #f=open('predlr1l.csv','r') #3.219877
 #f=open('predlr1lsw.csv','r') #3.231389
-#f=open('predlr1lw.csv','r') 
+#f=open('predlr1lw.csv','r')
 #f=open('predlr1lsw2.csv','r') #3.244810
 f=open('tmp.csv','r') #3.244810
 for l in f:
@@ -65,12 +65,12 @@ for l in f:
     pg[str(int(float(a[1])))].append(2+float(a[2]))
 
 #f=open('predrgbmg_t300.csv','r') #2.662905
-#f=open('predrgbmgr.csv','r') 
+#f=open('predrgbmgr.csv','r')
 #f=open('predksvm.csv','r') #3.135016
 #f=open('predksvmc0p5.csv','r') #3.112735
 #f=open('predksvmc5.csv','r') #3.213296
 #f=open('predksvmc10.csv','r') #3.199998
-#f=open('predrgbmgr.csv','r') 
+#f=open('predrgbmgr.csv','r')
 #f=open('predgam.csv','r') # 3.006094
 #f=open('predgamsp0.2.csv','r') # 3.041526
 #f=open('predrgbm_1.csv','r') #3.571410
@@ -88,11 +88,15 @@ for l in f:
 #f=open('predrgbm3_7.csv','r') #3.575889
 #f=open('predrgbmg14.csv','r')
 #f=open('trainrgbmg_1000_0.05_300_12.csv','r')  # 2.751018
-f=open('trainrgbmg_-0.5_1000_0.05_300_12.csv','r') #3.298684
-h=f.readline()
+#f=open('trainrgbmg_-0.5_1000_0.05_300_12.csv','r') #3.298684
+#h=f.readline()
+#for l in f:
+#    a=l.rstrip().split(',')
+#    pg[str(int(float(a[1])))].append(2.8-float(a[2]))
+f=open('trainrf_200_15_10.csv','r') #3.484283
 for l in f:
     a=l.rstrip().split(',')
-    pg[str(int(float(a[1])))].append(2.8-float(a[2]))
+    pg[str(int(float(a[0])))].append(2.33+float(a[1]))
 
 f=open('training.csv','r')
 l=f.readline()

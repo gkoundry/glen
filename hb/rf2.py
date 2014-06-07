@@ -3,7 +3,7 @@ import math
 import cPickle
 import numpy as np
 from sklearn.preprocessing import Imputer
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from tesla.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.cross_validation import train_test_split,KFold,cross_val_score
 from sklearn.linear_model import SGDClassifier,LogisticRegression
 from math import log
@@ -58,12 +58,13 @@ y=(y=='s').astype(int)
 eid=X['EventId']
 
 imp = Imputer(strategy='most_frequent')
-for mf in (2,5,10):
+for mf in (10,):
     for mn in (10,):
         ttr = 0
-        for tr in (200,):
+        for tr in (500,):
             kf = KFold(X.shape[0], 3, shuffle=True, random_state=1234)
-            fo=open('trainrf_%d_%d_%d.csv' % (tr,mf,mn),'w')
+            fo=open('trainrfw_%d_%d_%d.csv' % (tr,mf,mn),'w')
+            ap=None
             for train,test in kf:
                 xtrain = X.values[train]
                 xtrain = imp.fit_transform(xtrain)
@@ -78,9 +79,17 @@ for mf in (2,5,10):
                 #m=SGDClassifier(alpha=0.000001,loss='log')
                 nt = xtrain.shape[0]
                 m=RandomForestClassifier(n_estimators=tr,min_samples_leaf=mn,max_features=mf,n_jobs=4)
-                m.fit(xtrain,ytrain)
+                m.fit(xtrain,ytrain,sample_weight=(wtrain+4)/4.0)
                 pp=m.predict_proba(xtest)[:,1]
                 for i,a in enumerate(ytest):
                     fo.write('%s,%f\n' % (eidtest[i],pp[i]))
-            print 'tr%d mn%d mf%d %s %f' % (tr,mn,mf,maxAMS(pp,wtest,ytest),logloss(pp,ytest))
+                if ap is None:
+                    ap=pp
+                    ay=ytest
+                    aw=wtest
+                else:
+                    ap=np.concatenate((ap,pp))
+                    ay=np.concatenate((ay,ytest))
+                    aw=np.concatenate((aw,wtest))
+            print 'tr%d mn%d mf%d %s %f' % (tr,mn,mf,maxAMS(ap,aw,ay),logloss(ap,ay))
             sys.stdout.flush()
