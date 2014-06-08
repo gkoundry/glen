@@ -52,45 +52,33 @@ def maxAMS(pred,wt,y):
 LR=0.1
 
 X=pandas.read_csv("training.csv",na_values='-999.0')
+Xv=pandas.read_csv("test.csv",na_values='-999.0')
 w=X.pop('Weight')
 y=X.pop('Label')
 y=(y=='s').astype(int)
-eid=X['EventId']
+eid=Xv['EventId']
 
 imp = Imputer(strategy='most_frequent')
-for ws in (2,4,):
-    for mf in (15,):
+for ws in (2,):
+    for mf in (6,):
         for mn in (10,):
             ttr = 0
-            for tr in (200,):
+            for tr in (1000,):
                 kf = KFold(X.shape[0], 3, shuffle=True, random_state=1234)
-                fo=open('trainrfw_%d_%d_%d_%f.csv' % (tr,mf,mn,ws),'w')
+                fo=open('testrfw_%d_%d_%d_%f.csv' % (tr,mf,mn,ws),'w')
                 ap=None
-                for train,test in kf:
-                    xtrain = X.values[train]
-                    xtrain = imp.fit_transform(xtrain)
-                    xtest = X.values[test]
-                    xtest = imp.transform(xtest)
-                    ytrain = y.values[train]
-                    ytest = y.values[test]
-                    wtrain = w.values[train]
-                    wtest = w.values[test]
-                    eidtest = eid.values[test]
-                    #m=LogisticRegression()
-                    #m=SGDClassifier(alpha=0.000001,loss='log')
-                    nt = xtrain.shape[0]
-                    m=RandomForestClassifier(n_estimators=tr,min_samples_leaf=mn,max_features=mf,n_jobs=4)
-                    m.fit(xtrain,ytrain,sample_weight=(wtrain+ws*1.0)/ws)
-                    pp=m.predict_proba(xtest)[:,1]
-                    for i,a in enumerate(ytest):
-                        fo.write('%s,%f\n' % (eidtest[i],pp[i]))
-                    if ap is None:
-                        ap=pp
-                        ay=ytest
-                        aw=wtest
-                    else:
-                        ap=np.concatenate((ap,pp))
-                        ay=np.concatenate((ay,ytest))
-                        aw=np.concatenate((aw,wtest))
-                print 'tr%d mn%d mf%d ws%f %s %f' % (tr,mn,mf,ws,maxAMS(ap,aw,ay),logloss(ap,ay))
-                sys.stdout.flush()
+                xtrain = X.values
+                xtrain = imp.fit_transform(xtrain)
+                xtest = Xv.values
+                xtest = imp.transform(xtest)
+                ytrain = y.values
+                wtrain = w.values
+                eidtest = eid.values
+                #m=LogisticRegression()
+                #m=SGDClassifier(alpha=0.000001,loss='log')
+                nt = xtrain.shape[0]
+                m=RandomForestClassifier(n_estimators=tr,min_samples_leaf=mn,max_features=mf,n_jobs=4)
+                m.fit(xtrain,ytrain,sample_weight=(wtrain+ws*1.0)/ws)
+                pp=m.predict_proba(xtest)[:,1]
+                for i,a in enumerate(eidtest):
+                    fo.write('%s,%f\n' % (eidtest[i],pp[i]))

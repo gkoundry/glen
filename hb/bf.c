@@ -37,9 +37,10 @@ int main() {
 
 FILE *fp;
 int r,c,cols,ri,bestr,l;
-double ams,bestams,bestams2,sc,bc;
+double ams,bestams,bestams2,bestams3,sc,bc;
 char *p;
 
+	srand(13991);
 	fp=fopen("merge1.csv","r");
 	p = fgets(line,4096,fp);
 	r=0;
@@ -61,14 +62,29 @@ char *p;
 	for(c=0;c<cols;c++) {
 		coef[c]=0;
 	}
+	coef[0] =1.837462;
+	coef[1] =-1.350476;
+	coef[2] =1.666468;
+	coef[3] =0.447540;
+	coef[4] =0.337297;
+	coef[5] =0.439869;
+	coef[6] =-0.569049;
 	bestams2=0;
+	bestams3=0;
 	l=0;
 	while(1) {
+		if(l%5000==0) {
+			fflush(stdout);
+			for(c=0;c<cols;c++) {
+				coef[c]=0;
+			}
+			bestams3=0;
+		}
 		for(c=0;c<cols;c++) {
-			if(l%2==1)
+			if(l%3==0)
 				test_coef[c] = coef[c] + (rand()%20000 - 10000)*max(0.00007,(fabs(coef[c])/5000));
 			else
-				test_coef[c] = coef[c] + (rand()%20000 - 10000)*max(0.00001,(fabs(coef[c])/50000));
+				test_coef[c] = coef[c] + (rand()%20000 - 10000)*max(0.0000002,(fabs(coef[c])/500000));
 		}
 		l++;
 		for(r=0;r<ROWS;r++) {
@@ -106,17 +122,24 @@ char *p;
 		}
 		*/
 		if(bestams > bestams2) {
+			bestams2=bestams;
 			printf("%d %f",bestr,sqrt(2*bestams));
-			bestams2 = bestams;
 			for(c=0;c<cols;c++) {
 				printf(" %f",test_coef[c]);
-				coef[c] = test_coef[c];
 			}
 			printf("\n");
 			//printf(" ===");
 			fflush(stdout);
 		}
 		//printf("\n");
+		if(bestams > bestams3) {
+			bestams3 = bestams;
+			//printf("%f\n",sqrt(2*bestams));
+			//fflush(stdout);
+			for(c=0;c<cols;c++) {
+				coef[c] = test_coef[c];
+			}
+		}
 		r=0;
 		for(c=0;c<cols;c++) 
 			if(fabs(coef[c])>7) r=1;
