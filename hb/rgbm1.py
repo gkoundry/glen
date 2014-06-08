@@ -13,7 +13,7 @@ rpy2.robjects.numpy2ri.activate()
 from rpy2.robjects.numpy2ri import numpy2ri
 robjects.conversion.py2ri = numpy2ri
 from rpy2.robjects.packages import importr
-import pandas.rpy.common as com 
+import pandas.rpy.common as com
 rgbm = importr("gbm")
 
 def AMS(s, b):
@@ -42,10 +42,10 @@ eid=X['EventId']
 
 imp = Imputer(strategy='most_frequent')
 for mf in (7,):
-    for mn in (200,):
+    for mn in (40,):
         ttr = 0
-        for tr in (5,):
-            fo=open('predrgbm_%d_%f_%d_na.csv' % (tr,LR,mn),'w')
+        for tr in (200,):
+            fo=open('predrgbm_%d_%f_%d_w.csv' % (tr,LR,mn),'w')
             scs = 0
             scb = 0
             kf = KFold(X.shape[0], 2, shuffle=True, random_state=1234)

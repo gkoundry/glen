@@ -40,8 +40,8 @@ print ('finish loading from csv ')
 
 scb=0
 scs=0
-fo=open('predxgb.csv','w')
-kf = KFold(dtrain.shape[0], 2, shuffle=True, random_state=1234)
+fo=open('predxgbtr1000nw.csv','w')
+kf = KFold(dtrain.shape[0], 3, shuffle=True, random_state=1234)
 for train,test in kf:
     label  = dtrain[train,32]
     data   = dtrain[train,1:31]
@@ -55,7 +55,8 @@ for train,test in kf:
     print ('weight statistics: wpos=%g, wneg=%g, ratio=%g' % ( sum_wpos, sum_wneg, sum_wneg/sum_wpos ))
 
     # construct xgboost.DMatrix from numpy array, treat -999.0 as missing value
-    xgmat = xgb.DMatrix( data, label=label, missing = -999.0, weight=weight )
+    xgmat = xgb.DMatrix( data, label=label, missing = -999.0)
+    #xgmat = xgb.DMatrix( data, label=label, missing = -999.0, weight=weight )
 
     # setup parameters for xgboost
     param = {}
@@ -64,18 +65,20 @@ for train,test in kf:
     param['objective'] = 'binary:logitraw'
     # scale weight of positive examples
     param['scale_pos_weight'] = sum_wneg/sum_wpos
-    param['bst:eta'] = 0.1
+    param['bst:eta'] = 0.05
+    #param['bst:eta'] = 0.1
     param['bst:max_depth'] = 6
     param['eval_metric'] = 'auc'
     param['silent'] = 1
     param['nthread'] = 4
 
     # you can directly throw param in, though we want to watch multiple metrics here
-    plst = list(param.items())+[('eval_metric', 'ams@0.15')]
+    plst = list(param.items())
+    #plst = list(param.items())+[('eval_metric', 'ams@0.15')]
 
     watchlist = [ (xgmat,'train') ]
     # boost 120 tres
-    num_round = 120
+    num_round = 1000
     print ('loading data end, start to boost trees')
     bst = xgb.train( plst, xgmat, num_round, watchlist );
 
