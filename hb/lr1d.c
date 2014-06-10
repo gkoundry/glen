@@ -9,15 +9,28 @@
 #else
 #define FOLDS 1
 #endif
-#define MAX_ITER 20
+#define MAX_ITER 6000
 #define WSHRINK 15
-#define LR 0.000001
+#define LR 0.0000005
 #define RC 0.0000000
 #define ROWS 250000
 #define ROWST 550000
 #define COLS 31
 #define COLS2 73
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#define min(a,b) (((a) < (b)) ? (a) : (b))
 //#define COLS2 42
+/*
+p = (1/(1+exp(-(a*m + b*n +c))))
+s = q + y * w * p
+b = r + (1-y) * w * p
+d = s/sqrt(b)
+d = (q+y*w*p)/sqrt(r+(1-y)*w*p)
+d = d/da ((q+y*w*(1/(1+exp(-(a*m + b*n +c)))))/sqrt(r+(1-y)*w*(1/(1+exp(-(a*m + b*n +c))))))
+ep = exp(pred);
+d = x * y[r] * sqrt(-w[r]*(y[r]-1)*ep/(ep+1)) / (2 * (y[r]-1) * (ep+1));
+d = w[r] * ep * (y[r]*(w[r]*(y[r]-1)*ep-2*b0*(ep+1))-s0*(y[r]-1)*(ep+1)) / (2*(ep+1)*(ep+1)*sqrt(w[r]*(1-y[r])/(epn+1)+b0)*(b0*(ep+1)-w[r]*(y[r]-1)*ep));
+*/
 
 double coef[FOLDS][COLS2];
 char line[4096];
@@ -75,9 +88,11 @@ int main() {
 
 char *p;
 int l2,r,c,mc,cv,l,tot;
-double sd[COLS2],avg[COLS2],bc,sc,med,pred,d,b[FOLDS],ll,llt;
+double b0,s0,ep,epn,sd[COLS2],avg[COLS2],bc,sc,med,pred,d,b[FOLDS],ll,llt;
 FILE *fp,*out;
 
+	b0=4000;
+	s0=230;
 	for(r=0;r<ROWS;r++) {
 #if PRED==1
 		test[r] = 1;
@@ -226,7 +241,7 @@ FILE *fp,*out;
 				//printf("%d %d %f\n",cv,r,x[r][2]);
 			}
 			*/
-			for(l2=0;l2<10;l2++) {
+			for(l2=0;l2<55;l2++) {
 				for(r=0;r<ROWS;r++) {
 					if(test[r] != cv) {
 						pred=b[cv];
@@ -234,7 +249,11 @@ FILE *fp,*out;
 							//printf("%f %f",coef[cv][c],x[r][c]);
 							pred+=coef[cv][c] * x[r][c];
 						}
-						d = -w[r]*(y[r]*(2*4000-w[r]*(y[r]-1)*pred)+230*(y[r]-1))/(2*pow(4000-w[r]*(y[r]-1)*pred,1.5));
+						//d = -w[r]*(y[r]*(2*4000-w[r]*(y[r]-1)*pred)+230*(y[r]-1))/(2*pow(4000-w[r]*(y[r]-1)*pred,1.5));
+						ep = exp(pred);
+						epn = exp(-pred);
+						//d = y[r] * sqrt(-w[r]*(y[r]-1)*ep/(ep+1)) / (2 * (y[r]-1) * (ep+1));
+						d = -w[r] * ep * (y[r]*(w[r]*(y[r]-1)*ep-2*b0*(ep+1))-s0*(y[r]-1)*(ep+1)) / (2*(ep+1)*(ep+1)*sqrt(w[r]*(1-y[r])/(epn+1)+b0)*(b0*(ep+1)-w[r]*(y[r]-1)*ep));
 						b[cv] += d*LR;
 						for(c=0;c<COLS2;c++) {
 							//printf("%d %d %f %f %f %f %f\n",cv,r,d,x[r][c],coef[cv][c],y[r],pred);
@@ -245,16 +264,26 @@ FILE *fp,*out;
 					}
 				}
 			}
+			printf("%f",b[cv]);
+			for(c=0;c<COLS2;c++) {
+				printf(" %f",coef[cv][c]);
+			}
+			printf("\n");
+			fflush(stdout);
 			for(r=0;r<ROWS;r++) {
 				if(test[r] != cv) {
 					pred=b[cv];
 					for(c=0;c<COLS2;c++) {
 						pred+=coef[cv][c] * x[r][c];
 					}
-					llt += (y[r]-pred)*(y[r]-pred);
+					pred=1/(1+exp(-pred));
+					pred=min(0.9999,max(0.0001,pred));
+					//if(l==5) printf("%d,%f\n",id[r],pred);
+					llt += y[r]*log(pred)+(1-y[r])*log(1-pred);
 					tot+=1;
 				}
 			}
+			//if(l==5) exit(0);
 #if PRED==0
 			for(r=0;r<ROWS;r++) {
 				if(test[r] == cv) {
@@ -263,13 +292,15 @@ FILE *fp,*out;
 						pred+=coef[cv][c] * x[r][c];
 					}
 					if(l==MAX_ITER) fprintf(out,"%d,%f\n",id[r],pred);
+					pred=1/(1+exp(-pred));
+					pred=min(0.9999,max(0.0001,pred));
 					predt[r]=pred;
-					ll += (y[r]-pred)*(y[r]-pred);
+					ll += y[r]*log(pred)+(1-y[r])*log(1-pred);
 				}
 			}
 #endif
 		} // end cv
-		fprintf(stderr,"%f %f %f %f %f\n",sc,bc,max_AMS(),-ll/ROWS,-llt/tot);
+		fprintf(stderr,"%f %f %f %f %f %f\n",LR,sc,bc,max_AMS(),-ll/ROWS,-llt/tot);
 	}
 #if PRED==0
 	fclose(out);
