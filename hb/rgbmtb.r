@@ -1,7 +1,7 @@
 library('cvTools')
 library('gbm')
 
-tr=2000
+tr=1000
 LR=0.05
 mn=300
 mf=12

@@ -16,8 +16,8 @@ for(i in c(1,2,3)) {
 	pa=rbind(pa,cbind(ev,p))
   }
 }
-write.csv(pa,'train_ksvmc5.csv')
+write.csv(pa,'train_ksvmc5a.csv')
 dv=read.csv('test_imp.csv',na.string='-999.0')
 m=ksvm(Label ~ .,data=dx,C=5)
 p=predict(m,dv)
-write.csv(cbind(dv$EventId,p),"test_ksvmc5.csv")
+write.csv(cbind(dv$EventId,p),"test_ksvmc5a.csv")

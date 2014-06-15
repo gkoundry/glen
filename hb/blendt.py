@@ -69,7 +69,7 @@ for l in f:
 #f=open('predksvm.csv','r') #3.135016
 #f=open('predksvmc0p5.csv','r') #3.112735
 #f=open('predksvmc5.csv','r') #3.213296
-f=open('predksvmc5','r') #3.227719
+#f=open('predksvmc5','r') #3.227719
 #f=open('predksvmc10.csv','r') #3.199998
 #f=open('predrgbmgr.csv','r')
 #f=open('predgam.csv','r') # 3.006094
@@ -91,11 +91,12 @@ f=open('predksvmc5','r') #3.227719
 #f=open('trainrgbmg_1000_0.05_300_12.csv','r')  # 2.751018
 #f=open('trainrgbmg_-0.5_1000_0.05_300_12.csv','r') #3.298684
 #f=open('train_gam_v1.csv','r') #3.055216
-#f=open('train_gam_v1.csv','r')
+#f=open('train_gam012.csv','r') #3.311651
+f=open('train_gam_ptw.csv','r') #
 h=f.readline()
 for l in f:
     a=l.rstrip().split(',')
-    pg[str(int(float(a[1])))].append(1.5+float(a[2]))
+    pg[str(int(float(a[1])))].append(4.3+float(a[2]))
 #f=open('trainrfw_200_15_10_0.500000.csv','r') #3.508947
 #f=open('trainrfw_200_15_10_1.000000.csv','r') #3.516727
 #f=open('trainrfw_200_15_10_2.000000.csv','r') #3.503401874742183
@@ -137,7 +138,8 @@ cur = AMS(st, bt)
 for w2 in(0.4,):
     for w3 in(0,): #0.05,0.10):
         #for th in (2.82,):
-        for th in np.arange(2.3,3.7,0.01):
+        for th in np.arange(0.3,3.7,0.05):
+        #for th in np.arange(2.3,3.7,0.01):
         #for th in np.arange(0.55,8.7,0.005):
         #for th in np.arange(0.002,8.7,0.00005):
         #for th in (0.0001,):
