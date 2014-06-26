@@ -6,7 +6,7 @@ LR=0.05
 mn=300
 mf=12
 
-d=read.csv('training.csv',na.string='-999.0')
+d=read.csv('train_shift.csv',na.string='-999.0')
 d$Y[d$Label=='b']=0
 d$Y[d$Label=='s']=1
 dx=subset(d,select=-c(Label,Weight,EventId))
@@ -18,7 +18,7 @@ for(i in c(1,2,3)) {
   wtrain <- d[folds$subsets[folds$which != i], ]$Weight
   validation <- dx[folds$subsets[folds$which == i], ]
   etest <- d[folds$subsets[folds$which == i], ]$EventId
-  m=gbm(Y ~ .,data=train,bag.fraction=1,n.trees=tr,verbose=FALSE,keep.data=FALSE,n.minobsinnode=mn,distribution='adaboost',interaction.depth=mf,shrinkage=LR,w=(wtrain+4)/4)
+  m=gbm(Y ~ .,data=train,bag.fraction=1,n.trees=tr,verbose=FALSE,keep.data=FALSE,n.minobsinnode=mn,distribution='bernoulli',interaction.depth=mf,shrinkage=LR,weights=(wtrain+4)/4)
   p=predict(m,validation,n.trees=tr,type="response")
   if(i==1) {
 	pa=cbind(etest,p)
@@ -28,5 +28,5 @@ for(i in c(1,2,3)) {
 	y = c(y,validation$Y)
   }
 }
-write.csv(-mean(y*log(pa[,2])+(1-y)*log(1-pa[,2])),paste('rgbmtaw',tr,LR,mn,mf,".log",sep="_"))
-write.csv(pa,paste('trainrgbmaw',tr,"_",LR,"_",mn,"_",mf,'.csv',sep=""))
+write.csv(-mean(y*log(pa[,2])+(1-y)*log(1-pa[,2])),paste('rgbmtb',tr,LR,mn,mf,".log",sep="_"))
+write.csv(pa,paste('train_rgbmbsw',tr,"_",LR,"_",mn,"_",mf,'.csv',sep=""))

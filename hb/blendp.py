@@ -7,6 +7,26 @@ import numpy as np
 import sys
 from itertools import product
 
+def iqr(a):
+    return np.percentile(a.values(),90)-np.percentile(a.values(),10)
+#sd = {'xgb': 0.951530, 'gamtw': 8.441251, 'rgbmbw': 0.867867, 'rgbmbs': 0.864041, 'rfbw': 0.789340, 'svm10': 0.971562, 'rgbmg': 3.925392, 'gam': 6.049710, }
+#avg = {'xgb': 0.420928, 'gamtw': -6.640058, 'rgbmbw': 0.137540, 'rgbmbs': 0.141176, 'rfbw': 0.171310, 'svm10': 0.156137, 'rgbmg': 1.178741, 'gam': -1.224612, }
+#sd = {'xgb': 0.951530, 'rgbmbw': 0.867867, }
+#avg = {'xgb': 0.420928, 'rgbmbw': 0.137540, }
+#sd = {'xgb': 0.951530, 'rgbmbw': 0.867867, 'gamtw': 8.441251, }
+#avg = {'xgb': 0.420928, 'rgbmbw': 0.137540, 'gamtw': -6.640058, }
+#sd = {'xgb': 0.951530, 'rgbmbw': 0.867867, 'rgbmg': 3.925392, }
+#avg = {'xgb': 0.420928, 'rgbmbw': 0.137540, 'rgbmg': 1.178741, }
+#sd = {'xgb': 0.951530, 'rgbmbw': 0.867867, 'rgbmaw': 0.880809, }
+#avg = {'xgb': 0.420928, 'rgbmbw': 0.137540, 'rgbmaw': 0.133359, }
+#sd = {'xgb': 0.951530, 'rgbmbw': 0.867867, 'rfbw': 0.789340, }
+#avg = {'xgb': 0.420928, 'rgbmbw': 0.137540, 'rfbw': 0.171310, }
+sd = {'xgb': 0.951530, 'rgbmbw': 0.867867, 'gamtw': 8.441251, 'rfbw': 0.789340, 'gamt': 6.426416, 'svm5': 0.963539, }
+avg = {'xgb': 0.420928, 'rgbmbw': 0.137540, 'gamtw': -6.640058, 'rfbw': 0.171310, 'gamt': -1.280268, 'svm5': 0.153622, }
+
+
+
+
 def AMS(s, b):
     """ Approximate Median Significance defined as:
         AMS = sqrt(
@@ -22,43 +42,30 @@ def AMS(s, b):
     else:
         return math.sqrt(radicand)
 
+def psa(k,p):
+    if k in sd:
+        sys.stderr.write( '%s %s/%s %s/%s\n' % (k,sd[k],iqr(p[k]),avg[k],np.median(p[k].values())))
+
 pred={}
 f=open('predxgbp.csv','r') #3.588919
-avg=0
 pred['xgb']={}
 for l in f:
     a=l.rstrip().split(',')
     v=1/(1+math.exp(-float(a[1])))
     pred['xgb'][a[0]]=v
-    avg+=v
-avg/=250000
-sd=0
-for v in pred['xgb'].values():
-    sd += (v-avg)**2
-sd=math.sqrt(sd/250000)
-for k in pred['xgb'].keys():
-    pred['xgb'][k] = (pred['xgb'][k]-avg)/sd
+psa('xgb',pred)
 
 #f=open('predlr1.csv','r') #3.086161
 #f=open('predlr1l.csv','r') #3.219877
 #f=open('predlr1lsw.csv','r') #3.231389
 f=open('predlr1lsw2p.csv','r') #3.244810
-avg=0
 pred['lr1']={}
 for l in f:
     a=l.rstrip().split(',')
     pred['lr1'][a[0]]=float(a[1])
-    avg+=float(a[1])
-avg/=250000
-sd=0
-for v in pred['lr1'].values():
-    sd += (v-avg)**2
-sd=math.sqrt(sd/250000)
-for k in pred['lr1'].keys():
-    pred['lr1'][k] = (pred['lr1'][k]-avg)/sd
+#psa('lr1',pred)
 
 f=open('test.csv','r')
-avg=0
 h=f.readline()
 idt=[]
 for l in f:
@@ -66,161 +73,98 @@ for l in f:
     idt.append(a[0])
 
 f=open('testrgbmb1000_0.05_300_12.csv','r')
-avg=0
 h=f.readline()
 pred['rgbmb']={}
 r=0
 for l in f:
     a=l.rstrip().split(',')
     pred['rgbmb'][idt[r]]=float(a[1])
-    avg+=float(a[1])
     r+=1
-avg/=250000
-sd=0
-for v in pred['rgbmb'].values():
-    sd += (v-avg)**2
-sd=math.sqrt(sd/250000)
-for k in pred['rgbmb'].keys():
-    pred['rgbmb'][k] = (pred['rgbmb'][k]-avg)/sd
+#psa('rgbmb',pred)
 
 f=open('testrgbmbs1000_0.05_300_12.csv','r')
 h=f.readline()
 pred['rgbmbs']={}
-avg=0
-r=0
 for l in f:
     a=l.rstrip().split(',')
-    pred['rgbmbs'][idt[r]]=float(a[1])
-    r+=1
-    avg+=float(a[1])
-avg/=250000
-sd=0
-for v in pred['rgbmbs'].values():
-    sd += (v-avg)**2
-sd=math.sqrt(sd/250000)
-for k in pred['rgbmbs'].keys():
-    pred['rgbmbs'][k] = (pred['rgbmbs'][k]-avg)/sd
+    pred['rgbmbs'][str(int(float(a[1])))]=float(a[2])
+psa('rgbmbs',pred)
 
 f=open('testrgbmg1000_0.05_300_12.csv','r')
-avg=0
 h=f.readline()
 pred['rgbmg']={}
-r=0
 for l in f:
     a=l.rstrip().split(',')
-    pred['rgbmg'][idt[r]]=float(a[1])
-    avg+=float(a[1])
-    r+=1
-avg/=250000
-sd=0
-for v in pred['rgbmg'].values():
-    sd += (v-avg)**2
-sd=math.sqrt(sd/250000)
-for k in pred['rgbmg'].keys():
-    pred['rgbmg'][k] = (pred['rgbmg'][k]-avg)/sd
+    pred['rgbmg'][str(int(float(a[1])))]=float(a[2])
+psa('rgbmg',pred)
 
 f=open('testrgbmbw1000_0.05_300_12.csv','r')
-avg=0
 h=f.readline()
 pred['rgbmbw']={}
-r=0
 for l in f:
     a=l.rstrip().split(',')
-    pred['rgbmbw'][idt[r]]=float(a[1])
-    avg+=float(a[1])
-    r=r+1
-avg/=250000
-sd=0
-for v in pred['rgbmbw'].values():
-    sd += (v-avg)**2
-sd=math.sqrt(sd/250000)
-for k in pred['rgbmbw'].keys():
-    pred['rgbmbw'][k] = (pred['rgbmbw'][k]-avg)/sd
+    pred['rgbmbw'][str(int(float(a[1])))]=float(a[2])
+psa('rgbmbw',pred)
+
+#f=open('testrgbmaw1000_0.05_300_12.csv','r')
+#h=f.readline()
+#pred['rgbmaw']={}
+#for l in f:
+#    a=l.rstrip().split(',')
+#    pred['rgbmaw'][str(int(float(a[1])))]=float(a[2])
+#psa('rgbmaw',pred)
 
 f=open('testrfw_1000_6_10_2.000000.csv','r') #
+#f=open('testrfwt_1000_6_10_2.000000.csv','r') #
 pred['rfbw']={}
-avg=0
 for l in f:
     a=l.rstrip().split(',')
     pred['rfbw'][str(int(float(a[0])))]=float(a[1])
-    avg+=float(a[1])
-avg/=250000
-sd=0
-for v in pred['rfbw'].values():
-    sd += (v-avg)**2
-sd=math.sqrt(sd/250000)
-for k in pred['rfbw'].keys():
-    pred['rfbw'][k] = (pred['rfbw'][k]-avg)/sd
-
+psa('rfbw',pred)
 
 ##f=open('predksvm.csv','r') #3.135016
 ##f=open('predksvmc0p5.csv','r') #3.112735
 #f=open('predksvmc5.csv','r') #3.112735
 f=open('test_ksvmc5.csv','r')
 h=f.readline()
-pred['svm']={}
-avg=0
+pred['svm5']={}
 for l in f:
     a=l.rstrip().split(',')
-    pred['svm'][str(int(float(a[1])))]=float(a[2])
-    avg+=float(a[2])
-avg/=250000
-sd=0
-for v in pred['svm'].values():
-    sd += (v-avg)**2
-sd=math.sqrt(sd/250000)
-for k in pred['svm'].keys():
-    pred['svm'][k] = (pred['svm'][k]-avg)/sd
+    pred['svm5'][str(int(float(a[1])))]=float(a[2])
+psa('svm5',pred)
 
 f=open('test_ksvmc10.csv','r') #
 h=f.readline()
 pred['svm10']={}
-avg=0
 for l in f:
     a=l.rstrip().split(',')
     pred['svm10'][str(int(float(a[1])))]=float(a[2])
-    avg+=float(a[2])
-avg/=250000
-sd=0
-for v in pred['svm10'].values():
-    sd += (v-avg)**2
-sd=math.sqrt(sd/250000)
-for k in pred['svm10'].keys():
-    pred['svm10'][k] = (pred['svm10'][k]-avg)/sd
+psa('svm10',pred)
 
 #f=open('predbam.csv','r') #3.135016
 f=open('test_gam_v1.csv','r') #
 h=f.readline()
 pred['gam']={}
-avg=0
 for l in f:
     a=l.rstrip().split(',')
     pred['gam'][str(int(float(a[1])))]=float(a[2])
-    avg+=float(a[2])
-avg/=250000
-sd=0
-for v in pred['gam'].values():
-    sd += (v-avg)**2
-sd=math.sqrt(sd/250000)
-for k in pred['gam'].keys():
-    pred['gam'][k] = (pred['gam'][k]-avg)/sd
+psa('gam',pred)
+
+f=open('test_gam012.csv','r') #
+h=f.readline()
+pred['gamt']={}
+for l in f:
+    a=l.rstrip().split(',')
+    pred['gamt'][str(int(float(a[1])))]=float(a[2])
+psa('gamt',pred)
 
 f=open('test_gam_ptw.csv','r') #
 h=f.readline()
 pred['gamtw']={}
-avg=0
 for l in f:
     a=l.rstrip().split(',')
     pred['gamtw'][str(int(float(a[1])))]=float(a[2])
-    avg+=float(a[2])
-avg/=250000
-sd=0
-for v in pred['gamtw'].values():
-    sd += (v-avg)**2
-sd=math.sqrt(sd/250000)
-for k in pred['gamtw'].keys():
-    pred['gamtw'][k] = (pred['gamtw'][k]-avg)/sd
-
+psa('gamtw',pred)
 
 #f=open('training.csv','r')
 #l=f.readline()
@@ -255,15 +199,25 @@ for k in pred['gamtw'].keys():
 #ns
 #ws = { 'xgb':0.582723, 'rgbmg': -0.354122, 'rgbmb': 0.284462, 'svm': 0.218808, 'rgbmbw': 0.350164, 'rfbw': 0.127386, 'gam': -0.209421 }
 #y,wt,xgb,gamtw,rgbmbw,rgbmbs,rfbw,svm10,rgbmg,gam
-ws = { 'xgb': 1.112781, 'gamtw': -0.055742, 'rgbmbw': 0.222131, 'rgbmbs': 0.043973, 'rfbw': 0.214647, 'svm10':  0.115873, 'rgbmg': -0.068166, 'gam': -0.173238 }
+#ws = { 'xgb': 1.112781, 'gamtw': -0.055742, 'rgbmbw': 0.222131, 'rgbmbs': 0.043973, 'rfbw': 0.214647, 'svm10':  0.115873, 'rgbmg': -0.068166, 'gam': -0.173238 }
+#ws={ 'xgb': 5.397434, 'gamtw': 2.280759, 'rgbmbw': 2.574913, 'rgbmbs': 0.195464, 'rfbw': 1.306721, 'svm10': 0.589743, 'rgbmg': -0.465206, 'gam': -2.068766 }
+#ws={'rfbw': 0.628176, 'svm10': 0.650560, 'gamtw': 0.652506, 'xgb': 3.878341, 'gam': -1.103447, 'rgbmg': -1.282606, 'rgbmbw': 1.562337, 'rgbmbs': -0.090508}
+#ws={'rfbw': 0.180953, 'svm10': 0.868917, 'gamtw': 3.058251, 'xgb': 1.988539, 'gam': -1.238492, 'rgbmg': -0.627742, 'rgbmbw': 0.083814, 'rgbmbs': 1.237639}
+#ws={'rgbmbw': 0.276681, 'xgb': 1.00209}
+#ws={'rgbmbw': 0.246103, 'xgb': 0.711738, 'gamtw': 0.436929}
+#ws={'rgbmg': -0.593754, 'rgbmbw': 0.553037, 'xgb': 2.170524}
+#ws={'rgbmbw': 1.037678, 'xgb': 4.858884, 'rfbw': 0.321358}
+ws={'gamt': -1.202937, 'rfbw': 0.637227, 'gamtw': 2.434136, 'xgb': 2.021024, 'svm5': 0.403495, 'rgbmbw': 1.004861}
 th=0.760000
 
+for k in ws.keys():
+    for i in pred[k].keys():
+        pred[k][i] = (pred[k][i] - avg[k])/sd[k]
 pl=[]
 for i,a in pred['xgb'].items():
     p = 0
-    for k in pred.keys():
-        if k in ws:
-            p += ws[k]*pred[k][i]
+    for k in ws.keys():
+        p += ws[k]*pred[k][i]
     pl.append((i,p))
 
 print 'EventId,RankOrder,Class'

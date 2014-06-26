@@ -115,9 +115,6 @@ char *p;
 			rows[r]=r;
 		}
 		qsort(rows,ROWS,sizeof(int),cmpr);
-		for(r=0;r<ROWS;r++) {
-			ri = rows[r];
-		}
 		sc=0;
 		bc=0;
 		bestams=0;
@@ -143,6 +140,7 @@ char *p;
 		*/
 		if(bestams > bestams2) {
 			bestams2=bestams;
+			l=1;
 			printf("%d %f",bestr,sqrt(2*bestams));
 			for(c=0;c<cols;c++) {
 				printf(" %f",test_coef[c]);
@@ -153,7 +151,6 @@ char *p;
 		}
 		//printf("\n");
 		if(bestams > bestams3) {
-			l=1;
 			bestams3 = bestams;
 			//printf("%f\n",sqrt(2*bestams));
 			//fflush(stdout);

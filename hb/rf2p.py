@@ -51,12 +51,13 @@ def maxAMS(pred,wt,y):
 
 LR=0.1
 
-X=pandas.read_csv("training.csv",na_values='-999.0')
-Xv=pandas.read_csv("test.csv",na_values='-999.0')
+X=pandas.read_csv("training_imp.csv",na_values='-999.0')
+Xv=pandas.read_csv("test_imp.csv",na_values='-999.0')
 w=X.pop('Weight')
 y=X.pop('Label')
-y=(y=='s').astype(int)
-eid=Xv['EventId']
+et=X.pop('EventId')
+#y=(y=='s').astype(int)
+eid=Xv.pop('EventId')
 
 imp = Imputer(strategy='most_frequent')
 for ws in (2,):
