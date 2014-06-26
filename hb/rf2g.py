@@ -57,10 +57,10 @@ y=(y=='s').astype(int)
 eid=X['EventId']
 
 imp = Imputer(strategy='most_frequent')
-for mf in (8,16,):
-    for mn in (10,200):
+for mf in (8,):
+    for mn in (5,20):
         ttr = 0
-        for tr in (500,):
+        for tr in (500,1000):
             kf = KFold(X.shape[0], 3, shuffle=True, random_state=1234)
             fo=open('trainrfg_%d_%d_%d.csv' % (tr,mf,mn),'w')
             ap=None

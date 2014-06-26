@@ -9,7 +9,7 @@
 #else
 #define FOLDS 1
 #endif
-#define MAX_ITER 6000
+#define MAX_ITER 5
 #define WSHRINK 15
 #define LR 0.0000005
 #define RC 0.0000000
@@ -169,7 +169,7 @@ FILE *fp,*out;
 	}
 
 #if PRED==0
-	out=fopen("predlr1.csv","w");
+	out=fopen("predlr1d.csv","w");
 #endif
 	mc = 0;
 	for(c=0;c<COLS;c++) {

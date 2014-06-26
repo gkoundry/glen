@@ -8,6 +8,8 @@
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
+#include "mt.c"
+
 char line[4096];
 double x[ROWS][64],y[ROWS],wt[ROWS],pred[ROWS];
 int rows[ROWS];
@@ -33,14 +35,18 @@ double AMS(double s, double b) {
     return radicand;
 }
 
-int main() {
+int main(int argc,char *argv[]) {
 
 FILE *fp;
-int r,c,cols,ri,bestr,l;
-double ams,bestams,bestams2,bestams3,sc,bc;
+int rr,r,c,cols,ri,bestr,l;
+double ctot,ams,bestams,bestams2,bestams3,sc,bc;
 char *p;
 
-	srand(13991);
+	if(argc>1)
+		srand(atoi(argv[1]));
+	else
+		srand(34491);
+	mt_init();
 	fp=fopen("merge1.csv","r");
 	p = fgets(line,4096,fp);
 	r=0;
@@ -62,30 +68,44 @@ char *p;
 	for(c=0;c<cols;c++) {
 		coef[c]=0;
 	}
-	coef[0] =1.837462;
-	coef[1] =-1.350476;
-	coef[2] =1.666468;
-	coef[3] =0.447540;
-	coef[4] =0.337297;
-	coef[5] =0.439869;
-	coef[6] =-0.569049;
+	/*
+	//coef[0]=3.813458;coef[1]=-3.016982;coef[2]=3.876055;coef[3]=1.015701;coef[4]=0.651860;coef[5]=0.781593;coef[6]=-1.109773;
+	coef[0]=2.384019;coef[1]=-1.297991;coef[2]=0.741523;coef[3]=0.553754;coef[4]=0.830728;coef[5]=0.699941;coef[6]=-0.819930;
+	for(r=0;r<ROWS;r++) {
+		pred[r] = 0;
+		for(c=0;c<cols;c++) {
+			pred[r] += x[r][c] * coef[c];
+		}
+		printf("%d,%f\n",r,pred[r]);
+		rows[r]=r;
+	}
+	exit(0);
+	*/
 	bestams2=0;
 	bestams3=0;
 	l=0;
 	while(1) {
-		if(l%5000==0) {
-			fflush(stdout);
+		if(l%200==0) {
 			for(c=0;c<cols;c++) {
 				coef[c]=0;
 			}
 			bestams3=0;
 		}
+		ctot=0;
 		for(c=0;c<cols;c++) {
-			if(l%3==0)
-				test_coef[c] = coef[c] + (rand()%20000 - 10000)*max(0.00007,(fabs(coef[c])/5000));
+			rr=(((unsigned int)mt_random())%20000 - 10000);
+			if(l%4==0)
+				test_coef[c] = coef[c] + rr*max(0.0000002,(fabs(coef[c])/500000));
 			else
-				test_coef[c] = coef[c] + (rand()%20000 - 10000)*max(0.0000002,(fabs(coef[c])/500000));
+				test_coef[c] = coef[c] + rr*max(0.00007,(fabs(coef[c])/5000));
+			ctot+=test_coef[c];
 		}
+		/*
+		for(c=0;c<cols;c++) {
+			test_coef[c] /= ctot;
+		}
+		*/
+
 		l++;
 		for(r=0;r<ROWS;r++) {
 			pred[r] = 0;
@@ -133,6 +153,7 @@ char *p;
 		}
 		//printf("\n");
 		if(bestams > bestams3) {
+			l=1;
 			bestams3 = bestams;
 			//printf("%f\n",sqrt(2*bestams));
 			//fflush(stdout);
