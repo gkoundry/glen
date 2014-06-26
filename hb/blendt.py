@@ -31,10 +31,10 @@ for l in f:
 #f=open('predlr1lsw.csv','r') #3.231389
 #f=open('predlr1lw.csv','r')
 #f=open('predlr1lsw2.csv','r') #3.244810
-f=open('tmp.csv','r') #3.244810
-for l in f:
-    a=l.rstrip().split(',')
-    pg[a[0]].append(1.5+float(a[1]))
+#f=open('tmp.csv','r') #3.244810
+#for l in f:
+#    a=l.rstrip().split(',')
+#    pg[a[0]].append(1.5+float(a[1]))
 
 #f=open('predrgbm_200_0.100000.csv','r') #3.454425
 #f=open('predrgbm_400.csv','r') #3.403357
@@ -56,13 +56,13 @@ for l in f:
 #f=open('predrgbml_600_0.05_50_12.csv','r') #3.564990
 #f=open('trainrgbmb1000_0.05_300_12.csv','r')
 #f=open('trainrgbmbw1000_0.05_300_12.csv','r') #3.564783
-f=open('trainrgbmaw1000_0.05_300_12.csv','r')
-h=f.readline()
-for l in f:
-    #a=l.rstrip().split(',')
-    #pg[a[0]].append(1.2+math.log(float(a[1]))-math.log(1-float(a[1])))
-    a=l.rstrip().split(',')
-    pg[str(int(float(a[1])))].append(2+float(a[2]))
+#f=open('trainrgbmaw1000_0.05_300_12.csv','r')
+#h=f.readline()
+#for l in f:
+#    #a=l.rstrip().split(',')
+#    #pg[a[0]].append(1.2+math.log(float(a[1]))-math.log(1-float(a[1])))
+#    a=l.rstrip().split(',')
+#    pg[str(int(float(a[1])))].append(2+float(a[2]))
 
 #f=open('predrgbmg_t300.csv','r') #2.662905
 #f=open('predrgbmgr.csv','r')
@@ -91,6 +91,11 @@ for l in f:
 #f=open('trainrgbmg_1000_0.05_300_12.csv','r')  # 2.751018
 #f=open('trainrgbmg_-0.5_1000_0.05_300_12.csv','r') #3.298684
 #f=open('train_gam_v1.csv','r') #3.055216
+#f=open('train_gam_v1.csv','r')
+#h=f.readline()
+#for l in f:
+#    a=l.rstrip().split(',')
+#    pg[str(int(float(a[1])))].append(1.5+float(a[2]))
 #f=open('train_gam012.csv','r') #3.311651
 #f=open('train_gam_ptw.csv','r') #
 #f=open('trainrgbmb012.csv','r')
@@ -121,7 +126,7 @@ for l in f:
 wb=0
 wc=0
 for i,j in pg.items():
-    if j[4]==0:
+    if j[1]==0:
         wb+=wt[i]
         wc+=1
 wb/=wc
@@ -147,6 +152,7 @@ for w2 in(0.4,):
         #for th in (0.0001,):
             s=0
             b=0
+            cc=0
             for i,j in pg.items():
                 #if m.coef_[0]+m.coef_[1]*j[0]+m.coef_[2]*j[1]+m.coef_[3]*j[2]>th:
                 #if (j[0]*(1-w3-w2)+w3*j[1]+w2*j[2])>th:
@@ -154,13 +160,14 @@ for w2 in(0.4,):
                 #pe = (j[2] + 1/(1+math.exp(-j[0])))/2
                 pe = 1/(1+math.exp(-j[0]))
                 #pe = j[2]
-                ex = AMS(st+pe*th, bt+(1-pe)*((j[3]-wb)*0.5+wb))
-                if j[3]>th:
+                #ex = AMS(st+pe*th, bt+(1-pe)*((j[3]-wb)*0.5+wb))
+                if j[0]>th:
+                    cc+=1
                 #print '%f %f' % (cur,ex)
                 #if ex>cur:
                 #if pe*th>(1-pe)*((j[3]-wb)*0.7+wb):
-                    if j[4]==1:
+                    if j[1]==1:
                         s+=wt[i]
                     else:
                         b+=wt[i]
-            print '%f %f %f %f %f %f' % (w3,w2,th,AMS(s,b),s,b)
+            print '%f %f %f %f %f %f %d' % (w3,w2,th,AMS(s,b),s,b,cc)

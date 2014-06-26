@@ -23,6 +23,8 @@ def AMS(s, b):
     else:
         return math.sqrt(radicand)
 
+print AMS(230,4000)
+print AMS(230,4008)
 for s in (100,200,300):
     for b in (4000,6000,8000):
         print '%s %s' % (AMS(s,b),s/math.sqrt(b))
