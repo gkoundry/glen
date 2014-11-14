@@ -65,15 +65,16 @@ for ws in (2,):
         for mn in (10,):
             ttr = 0
             for tr in (1000,):
-                kf = KFold(X.shape[0], 3, shuffle=True, random_state=1234)
-                fo=open('testrfw_%d_%d_%d_%f.csv' % (tr,mf,mn,ws),'w')
+                fo=open('testrfw_%d_%d_%d_1200_2.csv' % (tr,mf,mn),'w')
                 ap=None
                 xtrain = X.values
                 xtrain = imp.fit_transform(xtrain)
                 xtest = Xv.values
                 xtest = imp.transform(xtest)
                 ytrain = y.values
-                wtrain = w.values
+                wtrain = w.copy().values
+                wtrain[ytrain==1] *= 1200
+                wtrain[ytrain==0] *= 2
                 eidtest = eid.values
                 #m=LogisticRegression()
                 #m=SGDClassifier(alpha=0.000001,loss='log')

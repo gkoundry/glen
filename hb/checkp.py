@@ -9,7 +9,7 @@
 
 #f=open('predbl84000.csv','r')
 #f=open('predbl6_86000.csv','r')
-f=open('predblstd.csv','r')
+f=open('predxr.csv','r')
 h=f.readline()
 s=[]
 for l in f:
@@ -28,13 +28,14 @@ for l in f:
 #f=open('testrgbmb1000_0.05_300_12.csv','r')
 #f=open('testrgbmbw1000_0.05_300_12.csv','r')
 #f=open('testrgbmbs1000_0.05_300_12.csv','r')
-#h=f.readline()
-#pred=[]
-#i=0
-#for l in f:
-#    a=l.rstrip().split(',')
-#    pred.append([idt[i],float(a[1])])
-#    i+=1
+f=open('testrgbmb300_2_2_1_1000_0.05_300_12.csv','r')
+h=f.readline()
+pred=[]
+i=0
+for l in f:
+    a=l.rstrip().split(',')
+    pred.append([idt[i],float(a[2])])
+    i+=1
 
 #f=open('testrgbmg1000_0.05_300_12.csv','r')
 #h=f.readline()
@@ -46,8 +47,9 @@ for l in f:
  #   i+=1
 
 #f=open('predxgbp.csv','r')
-#f=open('testrfw_1000_6_10_2.000000.csv','r') #
-#f=open('testrfwt_1000_6_10_2.000000.csv','r') #
+##f=open('testrfw_1000_6_10_2.000000.csv','r') #
+##f=open('testrfwt_1000_6_10_2.000000.csv','r') #
+##f=open('test_cknn_t_bw2.400000_wlr0.000010.csv','r')
 #pred=[]
 #for l in f:
 #    a=l.rstrip().split(',')
@@ -61,17 +63,25 @@ for l in f:
 #    a=l.rstrip().split(',')
 #    pred.append([str(int(float(a[1]))),float(a[2])])
 
+#f=open('test_ksvmc10t.csv','r')
+#h=f.readline()
+#pred=[]
+#for l in f:
+#    a=l.rstrip().split(',')
+#    pred.append([str(int(float(a[1]))),float(a[3])])
+
 #f=open('predbl7.csv','r')
 ##f=open('predbl6.csv','r')
 #f=open('predns.csv','r')
 #f=open('predbl8f.csv','r')
 #f=open('predblrft.csv','r')
-f=open('predble.csv','r')
-h=f.readline()
-pred=[]
-for l in f:
-    a=l.rstrip().split(',')
-    pred.append([a[0],-float(a[1])])
+#f=open('predsqrta.csv','r')
+#f=open('predbls10t.csv','r')
+#h=f.readline()
+#pred=[]
+#for l in f:
+#    a=l.rstrip().split(',')
+#    pred.append([a[0],-float(a[1])])
 
 #f=open('test_gam_ptw.csv','r') #
 #h=f.readline()

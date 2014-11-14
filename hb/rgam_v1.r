@@ -1,6 +1,12 @@
 library('cvTools')
 library('gam')
 d=read.csv('training0.csv')
+s_mult=300
+s_add=2
+b_mult=2
+b_add=1
+d$Weight[d$Label=='s'] = d$Weight[d$Label=='s'] * s_mult + s_add
+d$Weight[d$Label=='b'] = d$Weight[d$Label=='b'] * b_mult + b_add
 dx=subset(d,select=-c(Weight))
 folds <- cvFolds(NROW(d), K=5)
 for(i in c(1,2,3,4,5)) {

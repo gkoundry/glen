@@ -19,12 +19,12 @@ def AMS(s, b):
         return math.sqrt(radicand)
 
 pg={}
-#f=open('predxgb.csv','r') #3.588919
+f=open('predxgb.csv','r') #3.588919
 #f=open('predxgbw4.csv','r') #
-f=open('predxgbtr1000.csv','r') #3.603203
+#f=open('predxgbtr1000.csv','r') #3.603203
 for l in f:
     a=l.rstrip().split(',')
-    pg[a[0]]=[float(a[1])]
+    pg[a[0]]=[1/(1+math.exp(-float(a[1])))]
 
 #f=open('predlr1.csv','r') #3.086161
 #f=open('predlr1l.csv','r') #3.219877
@@ -108,7 +108,8 @@ for l in f:
 #f=open('trainrfw_200_15_10_2.000000.csv','r') #3.503401874742183
 #f=open('trainrfw_200_15_10_4.000000.csv','r') #3.4978659
 #f=open('trainrfw_1000_6_10_2.000000.csv','r') #3.552097
-f=open('trainrfwt_1000_6_10_2.000000.csv','r') #3.543051
+#f=open('trainrfwt_1000_6_10_2.000000.csv','r') #3.543051
+f=open('train_cknn_t_bw2.400000_wlr0.000010.csv','r')
 for l in f:
     a=l.rstrip().split(',')
     pg[str(int(float(a[0])))].append(0.03+float(a[1]))
@@ -126,7 +127,7 @@ for l in f:
 wb=0
 wc=0
 for i,j in pg.items():
-    if j[1]==0:
+    if j[2]==0:
         wb+=wt[i]
         wc+=1
 wb/=wc
@@ -145,7 +146,7 @@ cur = AMS(st, bt)
 for w2 in(0.4,):
     for w3 in(0,): #0.05,0.10):
         #for th in (2.82,):
-        for th in np.arange(0.6,3.7,0.01):
+        for th in np.arange(0.5,3.7,0.01):
         #for th in np.arange(2.3,3.7,0.01):
         #for th in np.arange(0.55,8.7,0.005):
         #for th in np.arange(0.002,8.7,0.00005):
@@ -161,12 +162,12 @@ for w2 in(0.4,):
                 pe = 1/(1+math.exp(-j[0]))
                 #pe = j[2]
                 #ex = AMS(st+pe*th, bt+(1-pe)*((j[3]-wb)*0.5+wb))
-                if j[0]>th:
+                if (j[0]+j[1])>th:
                     cc+=1
                 #print '%f %f' % (cur,ex)
                 #if ex>cur:
                 #if pe*th>(1-pe)*((j[3]-wb)*0.7+wb):
-                    if j[1]==1:
+                    if j[2]==1:
                         s+=wt[i]
                     else:
                         b+=wt[i]

@@ -50,18 +50,19 @@ def maxAMS(pred,wt,y):
 
 LR=0.1
 
-X=pandas.read_csv("training.csv",na_values='-999.0')
+X=pandas.read_csv("training_imp.csv",na_values='-999.0')
 w=X.pop('Weight')
 y=X.pop('Label')
-y=(y=='s').astype(int)
+w[y==1] = w[y==1] * 100
+w[y==0] = w[y==0] * -1
 eid=X['EventId']
 
 imp = Imputer(strategy='most_frequent')
-for mf in (8,):
-    for mn in (5,20):
+for mf in (16,):
+    for mn in (10,):
         ttr = 0
-        for tr in (500,1000):
-            kf = KFold(X.shape[0], 3, shuffle=True, random_state=1234)
+        for tr in (1000,):
+            kf = KFold(X.shape[0], 5, shuffle=True, random_state=1234)
             fo=open('trainrfg_%d_%d_%d.csv' % (tr,mf,mn),'w')
             ap=None
             for train,test in kf:

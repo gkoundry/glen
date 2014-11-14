@@ -21,10 +21,20 @@ def iqr(a):
 #avg = {'xgb': 0.420928, 'rgbmbw': 0.137540, 'rgbmaw': 0.133359, }
 #sd = {'xgb': 0.951530, 'rgbmbw': 0.867867, 'rfbw': 0.789340, }
 #avg = {'xgb': 0.420928, 'rgbmbw': 0.137540, 'rfbw': 0.171310, }
-sd = {'xgb': 0.951530, 'rgbmbw': 0.867867, 'gamtw': 8.441251, 'rfbw': 0.789340, 'gamt': 6.426416, 'svm5': 0.963539, }
-avg = {'xgb': 0.420928, 'rgbmbw': 0.137540, 'gamtw': -6.640058, 'rfbw': 0.171310, 'gamt': -1.280268, 'svm5': 0.153622, }
+#sd = {'xgb': 0.951530, 'rgbmbw': 0.867867, 'gamtw': 8.441251, 'rfbw': 0.789340, 'gamt': 6.426416, 'svm5': 0.963539, }
+#avg = {'xgb': 0.420928, 'rgbmbw': 0.137540, 'gamtw': -6.640058, 'rfbw': 0.171310, 'gamt': -1.280268, 'svm5': 0.153622, }
+#sd = {'xgb': 0.951530, 'rgbmbw': 0.867867, 'gamtw': 8.441251, 'rfbw': 0.789340, 'gamt': 6.426416, 'svm10t': 0.852498, }
+#avg = {'xgb': 0.420928, 'rgbmbw': 0.137540, 'gamtw': -6.640058, 'rfbw': 0.171310, 'gamt': -1.280268, 'svm10t': 0.829122, }
+#sd = {'xgb': 0.951530, 'rgbmbw': 0.867867, 'knnt': 0.347539, }
+#avg = {'xgb': 0.420928, 'rgbmbw': 0.137540, 'knnt': 0.388496, }
+#sd = {'xgb': 0.951530, 'rgbmaw': 0.880102, 'rfbw': 0.789340, }
+#avg = {'xgb': 0.420928, 'rgbmaw': 0.133656, 'rfbw': 0.171310, }
+sd = {'xgb': 0.960040, 'rgbmbw': 0.939329, }
+avg = {'xgb': 0.398802, 'rgbmbw': 0.306323, }
 
-
+#ws = {'xgb':0.2725,'rgbmbw':0.5600}
+#ws = {'rgbmbw':0.2725,'xgb':0.5600}
+ws = {'rgbmbw': 1.643, 'xgb': 1.3044}
 
 
 def AMS(s, b):
@@ -47,7 +57,8 @@ def psa(k,p):
         sys.stderr.write( '%s %s/%s %s/%s\n' % (k,sd[k],iqr(p[k]),avg[k],np.median(p[k].values())))
 
 pred={}
-f=open('predxgbp.csv','r') #3.588919
+#f=open('predxgbpw.csv','r') #3.588919
+f=open('predxgbp_800_100_6_1200_0_2_0_0.05_1.0.csv','r')
 pred['xgb']={}
 for l in f:
     a=l.rstrip().split(',')
@@ -98,7 +109,8 @@ for l in f:
     pred['rgbmg'][str(int(float(a[1])))]=float(a[2])
 psa('rgbmg',pred)
 
-f=open('testrgbmbw1000_0.05_300_12.csv','r')
+#f=open('testrgbmbw1000_0.05_300_12_2_2.csv','r')
+f=open('predbl/test_rgbmbw_1000_0.05_300_12.csv','r')
 h=f.readline()
 pred['rgbmbw']={}
 for l in f:
@@ -106,21 +118,28 @@ for l in f:
     pred['rgbmbw'][str(int(float(a[1])))]=float(a[2])
 psa('rgbmbw',pred)
 
-#f=open('testrgbmaw1000_0.05_300_12.csv','r')
-#h=f.readline()
-#pred['rgbmaw']={}
-#for l in f:
-#    a=l.rstrip().split(',')
-#    pred['rgbmaw'][str(int(float(a[1])))]=float(a[2])
-#psa('rgbmaw',pred)
+f=open('testrgbmaw1000_0.05_300_12.csv','r')
+h=f.readline()
+pred['rgbmaw']={}
+for l in f:
+    a=l.rstrip().split(',')
+    pred['rgbmaw'][str(int(float(a[1])))]=float(a[2])
+psa('rgbmaw',pred)
 
-f=open('testrfw_1000_6_10_2.000000.csv','r') #
+f=open('testrfwx_1000_6_10_2.000000.csv','r') #
 #f=open('testrfwt_1000_6_10_2.000000.csv','r') #
 pred['rfbw']={}
 for l in f:
     a=l.rstrip().split(',')
     pred['rfbw'][str(int(float(a[0])))]=float(a[1])
 psa('rfbw',pred)
+
+f=open('test_cknn_t_bw2.400000_wlr0.000010.csv','r')
+pred['knnt']={}
+for l in f:
+    a=l.rstrip().split(',')
+    pred['knnt'][str(int(float(a[0])))]=float(a[1])
+psa('knnt',pred)
 
 ##f=open('predksvm.csv','r') #3.135016
 ##f=open('predksvmc0p5.csv','r') #3.112735
@@ -133,6 +152,14 @@ for l in f:
     pred['svm5'][str(int(float(a[1])))]=float(a[2])
 psa('svm5',pred)
 
+f=open('test_ksvmc10t.csv','r')
+h=f.readline()
+pred['scm10t']={}
+for l in f:
+    a=l.rstrip().split(',')
+    pred['scm10t'][str(int(float(a[1])))]=float(a[3])
+psa('scm10t',pred)
+
 f=open('test_ksvmc10.csv','r') #
 h=f.readline()
 pred['svm10']={}
@@ -140,6 +167,14 @@ for l in f:
     a=l.rstrip().split(',')
     pred['svm10'][str(int(float(a[1])))]=float(a[2])
 psa('svm10',pred)
+
+f=open('test_ksvmc10t.csv','r') #
+h=f.readline()
+pred['svm10t']={}
+for l in f:
+    a=l.rstrip().split(',')
+    pred['svm10t'][str(int(float(a[1])))]=float(a[2])
+psa('svm10t',pred)
 
 #f=open('predbam.csv','r') #3.135016
 f=open('test_gam_v1.csv','r') #
@@ -207,12 +242,19 @@ psa('gamtw',pred)
 #ws={'rgbmbw': 0.246103, 'xgb': 0.711738, 'gamtw': 0.436929}
 #ws={'rgbmg': -0.593754, 'rgbmbw': 0.553037, 'xgb': 2.170524}
 #ws={'rgbmbw': 1.037678, 'xgb': 4.858884, 'rfbw': 0.321358}
-ws={'gamt': -1.202937, 'rfbw': 0.637227, 'gamtw': 2.434136, 'xgb': 2.021024, 'svm5': 0.403495, 'rgbmbw': 1.004861}
+#ws={'gamt': -1.202937, 'rfbw': 0.637227, 'gamtw': 2.434136, 'xgb': 2.021024, 'svm5': 0.403495, 'rgbmbw': 1.004861} #predblavg
+#ws={'gamt': -0.72845, 'rfbw': 0.460331, 'gamtw': 1.710972, 'xgb': 0.420878, 'svm5': 0.23327, 'rgbmbw': 0.736339} #sqrt
+#ws={'gamt': 0.031443, 'rfbw': 0.405169, 'gamtw': 0.40533, 'xgb': 1.339638, 'svm5': 0.313695, 'rgbmbw': 0.427382} #sqrt2
+#ws={'gamt': -0.496129, 'rfbw': 0.210772, 'gamtw': 0.962522, 'xgb': 0.661007, 'rgbmbw': 0.382076, 'svm10t': -0.244178} #svm10t
+#ws={'rgbmbw': 0.160479, 'xgb': 1.072316, 'knnt': 1.010216}
+#ws={'rgbmaw': 1.698562, 'xgb': 3.926927, 'rfbw': 0.926702}
+#ws={'rfbw': 0.20248, 'gamtw': 0.904874, 'xgb': 1.409318, 'rgbmbw': 0.810666, 'knnt': 0.055273, 'svm10t': -0.265887}
+#ws={'rgbmbw': 0.75,'xgb':0.25}
 th=0.760000
 
-for k in ws.keys():
-    for i in pred[k].keys():
-        pred[k][i] = (pred[k][i] - avg[k])/sd[k]
+#for k in ws.keys():
+#    for i in pred[k].keys():
+#        pred[k][i] = (pred[k][i] - avg[k])/sd[k]
 pl=[]
 for i,a in pred['xgb'].items():
     p = 0
